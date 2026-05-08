@@ -1,1 +1,1 @@
-# Modelo-laboratorio-electr-nica-
+# Modelo-laboratorio-electronica

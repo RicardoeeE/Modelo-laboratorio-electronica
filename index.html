@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab Virtual de Electrónica</title>
+  <link rel="stylesheet" href="style/main.css">
+  <link rel="stylesheet" href="style/instruments.css">
+  <link rel="stylesheet" href="style/breadboard.css">
+  <link rel="stylesheet" href="style/experiments.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ── Navbar ─────────────────────────────────────────────────────────── -->
+  <nav id="navbar">
+    <span class="nav-title">◈ Lab Virtual de Electrónica</span>
+    <div class="nav-mode">
+      <button class="mode-btn active" id="btn-mode-experiment">Experimentos</button>
+      <button class="mode-btn"        id="btn-mode-freeform">Protoboard libre</button>
+    </div>
+  </nav>
+
+  <!-- ── Main ──────────────────────────────────────────────────────────── -->
+  <div id="main">
+
+    <!-- ── Left sidebar ──────────────────────────────────────────────────── -->
+    <aside id="sidebar">
+      <div class="sidebar-header">Experimentos</div>
+      <div id="sidebar-list"></div>
+      <div id="guide-panel"></div>
+    </aside>
+
+    <!-- ── Right workspace ───────────────────────────────────────────────── -->
+    <div id="workspace">
+
+      <!-- ── Instrument row ─────────────────────────────────────────────── -->
+      <div id="instruments">
+
+        <!-- Power supply -->
+        <div id="psu-container"></div>
+
+        <!-- Function generator -->
+        <div id="fg-container"></div>
+
+        <!-- Oscilloscope -->
+        <div class="scope-panel" id="scope-panel">
+          <div class="scope-bezel">
+            <span class="scope-brand">RS PRO</span>
+            <span class="scope-model">RSDS 1052DL+ · 50 MHz · 500 MSa/s</span>
+          </div>
+          <div class="scope-canvas-wrap">
+            <canvas id="scope-canvas"></canvas>
+          </div>
+          <!-- Scope controls bar -->
+          <div id="scope-controls">
+            <div class="scope-ctrl-group">
+              <button class="run-stop-btn" id="scope-run-stop">RUN</button>
+            </div>
+            <div class="scope-ctrl-group">
+              <span class="scope-ctrl-label ch1-label">CH1 V/div</span>
+              <button class="step-btn" id="ch1-vdiv-down">‹</button>
+              <span id="ch1-vdiv-val" class="scope-ctrl-label ch1-label">0.5V</span>
+              <button class="step-btn" id="ch1-vdiv-up">›</button>
+              <button class="ch-toggle ch1" id="ch1-toggle">CH1</button>
+            </div>
+            <div class="scope-ctrl-group">
+              <span class="scope-ctrl-label ch2-label">CH2 V/div</span>
+              <button class="step-btn" id="ch2-vdiv-down">‹</button>
+              <span id="ch2-vdiv-val" class="scope-ctrl-label ch2-label">0.5V</span>
+              <button class="step-btn" id="ch2-vdiv-up">›</button>
+              <button class="ch-toggle ch2" id="ch2-toggle">CH2</button>
+            </div>
+            <div class="scope-ctrl-group">
+              <span class="scope-ctrl-label">t/div</span>
+              <button class="step-btn" id="tdiv-down">‹</button>
+              <span id="tdiv-val" class="scope-ctrl-label">2ms</span>
+              <button class="step-btn" id="tdiv-up">›</button>
+            </div>
+            <div class="scope-ctrl-group">
+              <span class="scope-ctrl-label">CH1 pos</span>
+              <button class="step-btn" id="ch1-pos-down">↓</button>
+              <button class="step-btn" id="ch1-pos-up">↑</button>
+              <span class="scope-ctrl-label">&nbsp;</span>
+              <span class="scope-ctrl-label">CH2 pos</span>
+              <button class="step-btn" id="ch2-pos-down">↓</button>
+              <button class="step-btn" id="ch2-pos-up">↑</button>
+            </div>
+            <div class="scope-ctrl-group">
+              <span class="scope-ctrl-label">Trigger</span>
+              <button class="step-btn" id="trig-down">‹</button>
+              <span id="trig-val" class="scope-ctrl-label">0.0V</span>
+              <button class="step-btn" id="trig-up">›</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /instruments -->
+
+      <!-- ── Breadboard area ─────────────────────────────────────────────── -->
+      <div id="breadboard-area">
+        <!-- Palette bar -->
+        <div id="palette-bar">
+          <span class="palette-label">Componentes:</span>
+          <button class="palette-btn active" data-tool="select">↖ Selec.</button>
+          <div class="palette-divider"></div>
+          <button class="palette-btn" data-tool="R"     data-color="#e8a000"><span class="palette-swatch" style="background:#e8a000"></span>R</button>
+          <button class="palette-btn" data-tool="C"     data-color="#4488ff"><span class="palette-swatch" style="background:#4488ff"></span>C</button>
+          <button class="palette-btn" data-tool="L"     data-color="#44cc44"><span class="palette-swatch" style="background:#44cc44"></span>L</button>
+          <button class="palette-btn" data-tool="D"     data-color="#ff4444"><span class="palette-swatch" style="background:#ff4444"></span>Diodo</button>
+          <button class="palette-btn" data-tool="LED"   data-color="#ff44ff"><span class="palette-swatch" style="background:#ff44ff"></span>LED</button>
+          <button class="palette-btn" data-tool="OPAMP" data-color="#44ffff"><span class="palette-swatch" style="background:#44ffff"></span>OpAmp</button>
+          <button class="palette-btn" data-tool="BJT"   data-color="#ffaa44"><span class="palette-swatch" style="background:#ffaa44"></span>BJT</button>
+          <button class="palette-btn" data-tool="WIRE"  data-color="#aaaaaa"><span class="palette-swatch" style="background:#aaa"></span>Cable</button>
+          <div class="palette-divider"></div>
+          <button class="palette-btn delete-btn" data-tool="delete">✕ Borrar</button>
+          <button class="palette-btn" id="clear-board">⊘ Limpiar</button>
+          <div id="detected-circuit" style="display:none">—</div>
+        </div>
+
+        <!-- Breadboard grid -->
+        <div id="breadboard-grid" style="position:relative; overflow:auto; flex:1;">
+          <div id="breadboard"></div>
+          <svg id="bb-svg" style="position:absolute;top:0;left:0;pointer-events:none;"></svg>
+        </div>
+      </div>
+
+    </div><!-- /workspace -->
+
+  </div><!-- /main -->
+
+</div><!-- /app -->
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

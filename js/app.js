@@ -6,7 +6,7 @@ import * as PSU        from './instruments/power-supply.js';
 import { buildGrid }   from './breadboard/breadboard.js';
 import { init as initPlacer, renderComponents } from './breadboard/component-placer.js';
 import { buildNetlist } from './breadboard/netlist-builder.js';
-import { init as initExperiments } from './experiments/experiment-manager.js';
+import { init as initExperiments, loadExperiment, getExperiments } from './experiments/experiment-manager.js';
 
 // ── V/div sequence (standard scope steps) ──────────────────────────────────
 const VDIV_STEPS = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20];
@@ -19,6 +19,7 @@ function _nearest(arr, val) { return arr.reduce((a, b) => Math.abs(b - val) < Ma
 
 // ── Recompute and render ────────────────────────────────────────────────────
 let _pending = false;
+let _lastExperimentId = null;
 
 function recompute() {
   if (_pending) return;
@@ -75,7 +76,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Subscribe to state changes
   on('change:fg',       recompute);
+  on('change:fg',       () => FG.refreshUI(document.getElementById('fg-container')));
   on('change:psu',      recompute);
+  on('change:psu',      () => PSU.refreshUI(document.getElementById('psu-container')));
   on('change:circuit',  recompute);
   on('change:breadboard', _onBreadboardChange);
   on('change:scope', () => { _updateScopeControlsUI(); if (!getState().scope.running) Scope.forceRender(); });
@@ -175,11 +178,14 @@ function _setMode(mode) {
   document.getElementById('btn-mode-experiment').classList.toggle('active', mode === 'experiment');
   document.getElementById('btn-mode-freeform').classList.toggle('active',   mode === 'freeform');
 
-  setCircuit({ mode });
-
   if (mode === 'freeform') {
-    setCircuit({ activeExperiment: null });
+    _lastExperimentId = getState().circuit.activeExperiment;
+    setCircuit({ mode, activeExperiment: null });
     recompute();
+  } else {
+    setCircuit({ mode });
+    const restoreId = _lastExperimentId ?? getExperiments()[0]?.id;
+    if (restoreId) loadExperiment(restoreId);
   }
 }
 

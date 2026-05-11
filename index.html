@@ -8,34 +8,36 @@
   <link rel="stylesheet" href="style/instruments.css">
   <link rel="stylesheet" href="style/breadboard.css">
   <link rel="stylesheet" href="style/experiments.css">
+  <link rel="stylesheet" href="style/theory.css">
 </head>
 <body>
 
 <div id="app">
 
-  <!-- ── Navbar ─────────────────────────────────────────────────────────── -->
+  <!-- ── Navbar ───────────────────────────────────────────────────────── -->
   <nav id="navbar">
     <span class="nav-title">◈ Lab Virtual de Electrónica</span>
     <div class="nav-mode">
       <button class="mode-btn active" id="btn-mode-experiment">Experimentos</button>
       <button class="mode-btn"        id="btn-mode-freeform">Protoboard libre</button>
+      <button class="mode-btn"        id="btn-mode-theory">Teoría</button>
     </div>
   </nav>
 
-  <!-- ── Main ──────────────────────────────────────────────────────────── -->
+  <!-- ── Main ──────────────────────────────────────────────────────── -->
   <div id="main">
 
-    <!-- ── Left sidebar ──────────────────────────────────────────────────── -->
+    <!-- ── Left sidebar ───────────────────────────────────────────── -->
     <aside id="sidebar">
       <div class="sidebar-header">Experimentos</div>
       <div id="sidebar-list"></div>
       <div id="guide-panel"></div>
     </aside>
 
-    <!-- ── Right workspace ───────────────────────────────────────────────── -->
+    <!-- ── Right workspace ─────────────────────────────────────────── -->
     <div id="workspace">
 
-      <!-- ── Instrument row ─────────────────────────────────────────────── -->
+      <!-- ── Instrument row ────────────────────────────────────────── -->
       <div id="instruments">
 
         <!-- Power supply -->
@@ -98,7 +100,7 @@
 
       </div><!-- /instruments -->
 
-      <!-- ── Breadboard area ─────────────────────────────────────────────── -->
+      <!-- ── Breadboard area ────────────────────────────────────────── -->
       <div id="breadboard-area">
         <!-- Palette bar -->
         <div id="palette-bar">
@@ -128,6 +130,8 @@
       </div>
 
     </div><!-- /workspace -->
+
+    <div id="theory-panel"></div>
 
   </div><!-- /main -->
 

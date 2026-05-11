@@ -1,0 +1,200 @@
+/* ── Theory panel ────────────────────────────────────────────────────── */
+#theory-panel {
+  display: none;
+  flex: 1;
+  overflow: hidden;
+}
+
+#theory-sidebar {
+  width: 195px;
+  flex-shrink: 0;
+  border-right: 1px solid #222;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.theory-sidebar-header {
+  padding: 6px 8px 4px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  border-bottom: 1px solid #222;
+  flex-shrink: 0;
+}
+
+.theory-cat-header {
+  padding: 8px 8px 2px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-amber);
+  font-weight: bold;
+}
+
+.theory-item {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 8px 4px 14px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  margin: 1px 4px;
+  transition: background 0.1s;
+}
+.theory-item:hover { background: #1e1e1e; }
+.theory-item.active {
+  background: #0a1a2a;
+  border-color: #1a3a5a;
+}
+.theory-item-practica {
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+.theory-item-name {
+  font-size: 11px;
+  line-height: 1.3;
+}
+.theory-item.active .theory-item-name { color: var(--color-ch1); }
+.theory-item.active .theory-item-practica { color: var(--color-green); }
+
+/* ── Detail panel ──────────────────────────────────────────────────── */
+#theory-detail {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 16px;
+}
+
+.theory-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.theory-detail-inner { max-width: 920px; }
+
+.theory-header {
+  margin-bottom: 12px;
+  border-bottom: 1px solid #222;
+  padding-bottom: 8px;
+}
+.theory-title {
+  font-size: 17px;
+  font-weight: bold;
+  color: var(--color-amber);
+}
+.theory-meta { font-size: 11px; color: var(--text-dim); margin-top: 3px; }
+.theory-practica { color: var(--color-green); font-weight: bold; }
+
+.theory-body {
+  display: grid;
+  grid-template-columns: 295px 1fr;
+  gap: 14px;
+}
+.theory-left, .theory-right {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Schematic */
+.theory-schematic-box {
+  background: #020e02;
+  border: 1px solid #1a3a1a;
+  border-radius: 6px;
+  padding: 8px;
+}
+.theory-schematic-box svg { width: 100%; height: auto; display: block; }
+
+/* Section headers */
+.theory-schematic-label,
+.theory-scope-label,
+.theory-section-title {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  border-bottom: 1px solid #222;
+  padding-bottom: 3px;
+}
+
+/* Scope notes */
+.theory-scope-box {
+  background: #080812;
+  border: 1px solid #222;
+  border-radius: 6px;
+  padding: 8px;
+}
+.theory-probe-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+.probe-text { color: var(--text-main); font-size: 11px; }
+.theory-scope-notes {
+  font-size: 10px;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-top: 6px;
+  border-top: 1px solid #1a1a1a;
+  padding-top: 5px;
+}
+
+/* Right column sections */
+.theory-section {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.theory-formula {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: var(--color-green);
+  padding: 2px 0;
+  line-height: 1.7;
+}
+.theory-measure,
+.theory-step {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-main);
+  padding: 3px 0;
+  border-bottom: 1px solid #1a1a1a;
+  line-height: 1.45;
+}
+.theory-measure:last-child, .theory-step:last-child { border-bottom: none; }
+.theory-measure-num,
+.theory-step-num {
+  background: #1a3a1a;
+  color: var(--color-green);
+  border-radius: 3px;
+  font-size: 9px;
+  padding: 1px 4px;
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 2px;
+  font-weight: bold;
+  min-width: 14px;
+  text-align: center;
+}
+.theory-warning {
+  background: #1a1000;
+  border: 1px solid #442200;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--color-amber);
+  line-height: 1.5;
+}
+.theory-components { font-size: 11px; color: var(--text-main); }
+.theory-signal { font-size: 10px; color: var(--text-dim); margin-top: 3px; }

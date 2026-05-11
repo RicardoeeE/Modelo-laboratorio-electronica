@@ -6,9 +6,10 @@ import * as PSU        from './instruments/power-supply.js';
 import { buildGrid }   from './breadboard/breadboard.js';
 import { init as initPlacer, renderComponents } from './breadboard/component-placer.js';
 import { buildNetlist } from './breadboard/netlist-builder.js';
-import { init as initExperiments } from './experiments/experiment-manager.js';
+import { init as initExperiments, loadExperiment, getExperiments } from './experiments/experiment-manager.js';
+import { init as initTheory, show as showTheory, hide as hideTheory } from './theory/theory-panel.js';
 
-// ── V/div sequence (standard scope steps) ──────────────────────────────────
+// ── V/div sequence (standard scope steps) ──────────────────────────────────────────
 const VDIV_STEPS = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20];
 const TDIV_STEPS = [1e-6, 2e-6, 5e-6, 1e-5, 2e-5, 5e-5, 1e-4, 2e-4, 5e-4,
                     1e-3, 2e-3, 5e-3, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1];
@@ -17,8 +18,9 @@ function stepUp(arr, val)   { const i = arr.indexOf(_nearest(arr, val)); return 
 function stepDown(arr, val) { const i = arr.indexOf(_nearest(arr, val)); return arr[Math.max(i - 1, 0)]; }
 function _nearest(arr, val) { return arr.reduce((a, b) => Math.abs(b - val) < Math.abs(a - val) ? b : a); }
 
-// ── Recompute and render ────────────────────────────────────────────────────
+// ── Recompute and render ──────────────────────────────────────────────────────
 let _pending = false;
+let _lastExperimentId = null;
 
 function recompute() {
   if (_pending) return;
@@ -33,7 +35,7 @@ function recompute() {
   });
 }
 
-// ── Init ────────────────────────────────────────────────────────────────────
+// ── Init ──────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   // Instruments
   FG.init(document.getElementById('fg-container'));
@@ -52,12 +54,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('guide-panel')
   );
 
+  await initTheory(document.getElementById('theory-panel'));
+
   // Scope controls
   _bindScopeControls();
 
   // Mode toggle
   document.getElementById('btn-mode-experiment').addEventListener('click', () => _setMode('experiment'));
   document.getElementById('btn-mode-freeform').addEventListener('click',   () => _setMode('freeform'));
+  document.getElementById('btn-mode-theory').addEventListener('click',     () => _setMode('theory'));
 
   // Palette
   _bindPalette();
@@ -75,7 +80,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Subscribe to state changes
   on('change:fg',       recompute);
+  on('change:fg',       () => FG.refreshUI(document.getElementById('fg-container')));
   on('change:psu',      recompute);
+  on('change:psu',      () => PSU.refreshUI(document.getElementById('psu-container')));
   on('change:circuit',  recompute);
   on('change:breadboard', _onBreadboardChange);
   on('change:scope', () => { _updateScopeControlsUI(); if (!getState().scope.running) Scope.forceRender(); });
@@ -135,7 +142,7 @@ function _updateScopeControlsUI() {
   document.getElementById('trig-val').textContent     = s.triggerLevel.toFixed(1) + 'V';
 }
 
-// ── Palette ─────────────────────────────────────────────────────────────────
+// ── Palette ───────────────────────────────────────────────────────────────────
 function _bindPalette() {
   document.querySelectorAll('#palette-bar [data-tool]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -147,7 +154,7 @@ function _bindPalette() {
   });
 }
 
-// ── Breadboard change → detect circuit ──────────────────────────────────────
+// ── Breadboard change → detect circuit ──────────────────────────────────────────
 function _onBreadboardChange() {
   const { components } = getState().breadboard;
 
@@ -170,20 +177,34 @@ function _onBreadboardChange() {
   recompute();
 }
 
-// ── Mode switch ──────────────────────────────────────────────────────────────
+// ── Mode switch ──────────────────────────────────────────────────────────────────
 function _setMode(mode) {
   document.getElementById('btn-mode-experiment').classList.toggle('active', mode === 'experiment');
   document.getElementById('btn-mode-freeform').classList.toggle('active',   mode === 'freeform');
+  document.getElementById('btn-mode-theory').classList.toggle('active',     mode === 'theory');
 
-  setCircuit({ mode });
+  const workspace = document.getElementById('workspace');
+  const theoryPanel = document.getElementById('theory-panel');
 
-  if (mode === 'freeform') {
-    setCircuit({ activeExperiment: null });
-    recompute();
+  if (mode === 'theory') {
+    workspace.style.display = 'none';
+    showTheory();
+  } else {
+    workspace.style.display = '';
+    hideTheory();
+    if (mode === 'freeform') {
+      _lastExperimentId = getState().circuit.activeExperiment;
+      setCircuit({ mode, activeExperiment: null });
+      recompute();
+    } else {
+      setCircuit({ mode });
+      const restoreId = _lastExperimentId ?? getExperiments()[0]?.id;
+      if (restoreId) loadExperiment(restoreId);
+    }
   }
 }
 
-// ── Formatters ───────────────────────────────────────────────────────────────
+// ── Formatters ───────────────────────────────────────────────────────────────────
 function _fmtV(v) {
   if (v >= 1)   return `${v}V`;
   return `${v * 1000}mV`;

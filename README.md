@@ -2,6 +2,8 @@
 
 Simulador web interactivo de laboratorio de electrónica analógica.
 
+**▶ [Probar la demo en el navegador](https://ricardoeee.github.io/Modelo-laboratorio-electronica/)**: no hace falta instalar nada.
+
 ## Equipos simulados
 
 | Equipo | Modelo real |

@@ -1,0 +1,264 @@
+/* ── Variables ─────────────────────────────────────────────────────────────────── */
+:root {
+  --bg:          #0d0d0d;
+  --bg-panel:    #1a1a1a;
+  --bg-display:  #001400;
+  --color-ch1:   #e8e000;
+  --color-ch2:   #d040e0;
+  --color-green: #00cc55;
+  --color-amber: #ffcc00;
+  --color-red:   #ff4444;
+  --color-dim:   #444;
+  --text-main:   #cccccc;
+  --text-dim:    #777;
+  --radius:      6px;
+  --gap:         8px;
+}
+
+/* ── Reset ────────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text-main);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  overflow: hidden;
+}
+
+/* ── App shell ────────────────────────────────────────────────────────────────── */
+#app {
+  display: grid;
+  grid-template-rows: 36px 1fr;
+  grid-template-columns: 1fr;
+  height: 100vh;
+}
+
+/* ── Navbar ─────────────────────────────────────────────────────────────────── */
+#navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #111;
+  border-bottom: 1px solid #333;
+  padding: 0 12px;
+  z-index: 10;
+}
+
+#navbar .nav-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--color-green);
+  letter-spacing: 0.05em;
+}
+
+#navbar .nav-mode {
+  display: flex;
+  gap: 4px;
+}
+
+.mode-btn {
+  background: #222;
+  border: 1px solid #444;
+  color: var(--text-dim);
+  padding: 3px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  transition: background 0.15s, color 0.15s;
+}
+.mode-btn.active {
+  background: #1a3a1a;
+  color: var(--color-green);
+  border-color: var(--color-green);
+}
+
+/* ── Main layout ──────────────────────────────────────────────────────────────── */
+#main {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+  height: 100%;
+}
+
+/* ── Left sidebar ─────────────────────────────────────────────────────────────── */
+#sidebar {
+  display: flex;
+  flex-direction: column;
+  background: #141414;
+  border-right: 1px solid #333;
+  overflow: hidden;
+}
+
+#sidebar-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px;
+}
+#sidebar-list::-webkit-scrollbar { width: 4px; }
+#sidebar-list::-webkit-scrollbar-track { background: #111; }
+#sidebar-list::-webkit-scrollbar-thumb { background: #333; }
+
+#guide-panel {
+  flex: 0 0 auto;
+  border-top: 1px solid #333;
+  overflow-y: auto;
+  max-height: 55vh;
+  padding: 8px;
+}
+#guide-panel::-webkit-scrollbar { width: 4px; }
+#guide-panel::-webkit-scrollbar-thumb { background: #333; }
+
+/* ── Right workspace ────────────────────────────────────────────────────────────── */
+#workspace {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+}
+
+/* ── Instrument row ─────────────────────────────────────────────────────────────── */
+#instruments {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  gap: var(--gap);
+  padding: var(--gap);
+  background: #0f0f0f;
+  border-bottom: 1px solid #333;
+  height: 300px;
+  min-height: 260px;
+  max-height: 340px;
+}
+
+/* ── Breadboard area ────────────────────────────────────────────────────────────── */
+#breadboard-area {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: var(--gap);
+  gap: var(--gap);
+  position: relative;
+  min-height: 0;
+}
+
+/* ── Shared control styles ────────────────────────────────────────────────────────── */
+.ctrl-label {
+  display: block;
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.stepper-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.step-btn {
+  background: #222;
+  border: 1px solid #444;
+  color: var(--color-amber);
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s;
+  flex-shrink: 0;
+}
+.step-btn:hover  { background: #2a2a2a; }
+.step-btn:active { background: #333; }
+
+.num-input {
+  background: #0a0a0a;
+  border: 1px solid #333;
+  color: var(--color-amber);
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: 12px;
+  width: 70px;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+.num-input::-webkit-inner-spin-button { display: none; }
+.num-input:focus { outline: none; border-color: var(--color-green); }
+
+.toggle-btn {
+  background: #1a3a1a;
+  border: 1px solid #2a5a2a;
+  color: var(--color-green);
+  padding: 3px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: bold;
+}
+.toggle-btn.active { background: #1a4a1a; box-shadow: 0 0 6px rgba(0,200,80,0.4); }
+
+.wave-btns { display: flex; gap: 3px; }
+.wave-btn {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: var(--text-dim);
+  padding: 2px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+}
+.wave-btn.active {
+  background: #222;
+  color: var(--color-amber);
+  border-color: var(--color-amber);
+}
+
+/* ── 7-segment display style ─────────────────────────────────────────────────────────── */
+.seg7 {
+  font-family: 'Courier New', monospace;
+  color: var(--color-amber);
+  text-shadow: 0 0 8px rgba(255,204,0,0.6);
+  letter-spacing: 0.05em;
+}
+
+/* ── Scope controls row ──────────────────────────────────────────────────────────── */
+#scope-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: #0f0f0f;
+  border-top: 1px solid #222;
+  flex-wrap: wrap;
+}
+
+.scope-ctrl-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-right: 1px solid #333;
+  padding-right: 8px;
+}
+.scope-ctrl-group:last-child { border-right: none; }
+
+.scope-ctrl-label {
+  font-size: 10px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.ch1-label { color: var(--color-ch1); }
+.ch2-label { color: var(--color-ch2); }
+
+/* Scrollbars */
+* { scrollbar-width: thin; scrollbar-color: #333 #111; }

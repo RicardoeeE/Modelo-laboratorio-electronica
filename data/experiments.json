@@ -1,0 +1,236 @@
+{
+  "experiments": [
+    {
+      "id": "rc-lowpass",
+      "title": "Filtro RC Paso Bajo",
+      "icon": "⋓",
+      "description": "Un condensador en paralelo con la carga atenúa las frecuencias por encima de fc = 1/(2πRC). Mide la frecuencia de corte y el desfase de −45°.",
+      "defaultFG":  { "freq": 249, "amplitude": 1.0, "waveform": "sine",   "offset": 0, "enabled": true },
+      "defaultPSU": { "vPos": 15,  "vNeg": -15 },
+      "defaultParams": { "R": 1000, "C": 1e-7 },
+      "paramControls": [
+        { "key": "R", "label": "R",     "unit": "Ω",  "min": 100,  "max": 100000, "step": 100,  "default": 1000 },
+        { "key": "C", "label": "C",     "unit": "nF", "min": 1,    "max": 10000,  "step": 10,   "default": 100, "scale": 1e-9 }
+      ],
+      "probes": { "CH1": "Entrada (Vin)", "CH2": "Salida (Vout sobre C)" },
+      "formula": "fc = 1/(2πRC)",
+      "steps": [
+        { "n": 1, "title": "Montar el circuito",    "text": "Conecta R=1 kΩ en serie con C=100 nF entre la salida del generador y GND. Sonda CH1 a la entrada, CH2 al nodo central (entre R y C)." },
+        { "n": 2, "title": "Frecuencia baja (f ≪ fc)", "text": "Ajusta el generador a 100 Hz. fc ≈ 1,59 kHz. CH2 debe tener casi la misma amplitud que CH1 (atenuación < 1 dB). Desfase ≈ 0°." },
+        { "n": 3, "title": "Frecuencia de corte",   "text": "Sube a f = 1590 Hz ≈ fc. CH2 debe medir CH1/√2 ≈ 0,707×. El osciloscopio indicará ≈ −45° de desfase." },
+        { "n": 4, "title": "Frecuencia alta (f ≫ fc)", "text": "Sube a 16 kHz (10× fc). CH2 cae ≈ 10× (−20 dB). Comprueba la pendiente de −20 dB/década del filtro de primer orden." }
+      ]
+    },
+    {
+      "id": "rc-highpass",
+      "title": "Filtro RC Paso Alto",
+      "icon": "⋓",
+      "description": "El condensador bloquea DC y paso baja las frecuencias bajas. fc = 1/(2πRC). Por encima de fc la señal pasa casi sin atenuación.",
+      "defaultFG":  { "freq": 249, "amplitude": 1.0, "waveform": "sine",   "offset": 0, "enabled": true },
+      "defaultPSU": { "vPos": 15,  "vNeg": -15 },
+      "defaultParams": { "R": 1000, "C": 1e-7 },
+      "paramControls": [
+        { "key": "R", "label": "R", "unit": "Ω",  "min": 100, "max": 100000, "step": 100, "default": 1000 },
+        { "key": "C", "label": "C", "unit": "nF", "min": 1,   "max": 10000,  "step": 10,  "default": 100, "scale": 1e-9 }
+      ],
+      "probes": { "CH1": "Entrada (Vin)", "CH2": "Salida (Vout sobre R)" },
+      "formula": "fc = 1/(2πRC)",
+      "steps": [
+        { "n": 1, "title": "Montar",        "text": "Conecta C=100 nF en serie con R=1 kΩ. CH2 en el nodo entre C y R (voltaje sobre R)." },
+        { "n": 2, "title": "f ≪ fc",        "text": "A 100 Hz, CH2 estará muy atenuada (+90° desfase)." },
+        { "n": 3, "title": "f = fc",         "text": "A 1590 Hz, CH2 = 0,707 × CH1, desfase +45°." },
+        { "n": 4, "title": "f ≫ fc",         "text": "A 16 kHz, CH2 ≈ CH1, desfase → 0°." }
+      ]
+    },
+    {
+      "id": "rl-lowpass",
+      "title": "Filtro RL Paso Bajo",
+      "icon": "⋓",
+      "description": "La inductancia impide el paso de frecuencias altas. fc = R/(2πL). Salida medida sobre R.",
+      "defaultFG":  { "freq": 500, "amplitude": 1.0, "waveform": "sine", "offset": 0, "enabled": true },
+      "defaultPSU": { "vPos": 15, "vNeg": -15 },
+      "defaultParams": { "R": 100, "L": 0.01 },
+      "paramControls": [
+        { "key": "R", "label": "R", "unit": "Ω",  "min": 10,  "max": 10000, "step": 10, "default": 100 },
+        { "key": "L", "label": "L", "unit": "mH", "min": 0.1, "max": 1000,  "step": 1,  "default": 10, "scale": 1e-3 }
+      ],
+      "probes": { "CH1": "Entrada (Vin)", "CH2": "Salida (Vout sobre R)" },
+      "formula": "fc = R/(2πL)",
+      "steps": [
+        { "n": 1, "title": "Montar",  "text": "Conecta L=10 mH en serie con R=100 Ω. CH2 sobre R. fc = 100/(2π×0,01) ≈ 1,59 kHz." },
+        { "n": 2, "title": "f < fc",  "text": "A 200 Hz: CH2 ≈ CH1." },
+        { "n": 3, "title": "f = fc",  "text": "A 1590 Hz: CH2 = 0,707 × CH1, desfase −45°." },
+        { "n": 4, "title": "f > fc",  "text": "A 16 kHz: CH2 muy atenuada." }
+      ]
+    },
+    {
+      "id": "rl-highpass",
+      "title": "Filtro RL Paso Alto",
+      "icon": "⋓",
+      "description": "Salida medida sobre L. La bobina presenta alta impedancia a frecuencias altas.",
+      "defaultFG":  { "freq": 500, "amplitude": 1.0, "waveform": "sine", "offset": 0, "enabled": true },
+      "defaultPSU": { "vPos": 15, "vNeg": -15 },
+      "defaultParams": { "R": 100, "L": 0.01 },
+      "paramControls": [
+        { "key": "R", "label": "R", "unit": "Ω",  "min": 10,  "max": 10000, "step": 10, "default": 100 },
+        { "key": "L", "label": "L", "unit": "mH", "min": 0.1, "max": 1000,  "step": 1,  "default": 10, "scale": 1e-3 }
+      ],
+      "probes": { "CH1": "Entrada", "CH2": "Salida sobre L" },
+      "formula": "fc = R/(2πL)",
+      "steps": [
+        { "n": 1, "title": "Montar",  "text": "CH2 sobre L (en serie con R)." },
+        { "n": 2, "title": "f < fc",  "text": "CH2 muy atenuada, desfase +90°." },
+        { "n": 3, "title": "f = fc",  "text": "CH2 = 0,707 × CH1, desfase +45°." },
+        { "n": 4, "title": "f > fc",  "text": "CH2 ≈ CH1." }
+      ]
+    },
+    {
+      "id": "opamp-inverting",
+      "title": "Amplificador Inversor",
+      "icon": "△",
+      "description": "Op-amp LM741. Ganancia Av = −Rf/Rin. Salida invertida con amplitud ajustable. La PSU debe estar a ±15 V.",
+      "defaultFG":  { "freq": 1000, "amplitude": 0.5, "waveform": "sine", "offset": 0, "enabled": true },
+      "defaultPSU": { "vPos": 15, "vNeg": -15 },
+      "defaultParams": { "Rin": 10000, "Rf": 100000 },
+      "paramControls": [
+        { "key": "Rin", "label": "Rin", "unit": "kΩ", "min": 1,    "max": 100,  "step": 1, "default": 10,  "scale": 1000 },
+        { "key": "Rf",  "label": "Rf",  "unit": "kΩ", "min": 1,    "max": 1000, "step": 10, "default": 100, "scale": 1000 }
+      ],
+      "probes": { "CH1": "Entrada (Vin)", "CH2": "Salida (Vout)" },
+      "formula": "Av = −Rf/Rin",
+      "steps": [
+        { "n": 1, "title": "Alimentar op-amp",  "text": "Ajusta la PSU a V+=+15 V, V−=−15 V. Conecta a pines 7 y 4 del LM741." },
+        { "n": 2, "title": "Conexiones",         "text": "Rin=10 kΩ entre FG y pin 2 (−). Rf=100 kΩ entre pin 2 y pin 6. Pin 3 (+) a GND. Pin 6 a CH2." },
+        { "n": 3, "title": "Medir ganancia",     "text": "Con Vin=0,5 Vp a 1 kHz: Vout debe ser ≈ −5 V (invertida, ganancia −10). Comprueba en el osciloscopio." },
+        { "n": 4, "title": "Saturación",         "text": "Sube Vin hasta ver que Vout se recorta a ±(Vcc−1,5) ≈ ±13,5 V. Eso es la saturación del op-amp." }
+      ]
+    },
+    {
+      "id": "opamp-noninverting",
+      "title": "Amplificador No Inversor",
+      "icon": "△",
+      "description": "Op-amp en configuración no inversora: Av = 1 + Rf/R1. Señal de salida en fase con la entrada.",
+      "defaultFG":  { "freq": 1000, "amplitude": 0.5, "waveform": "sine", "offset": 0, "enabled": true },
+      "defaultPSU": { "vPos": 15, "vNeg": -15 },
+      "defaultParams": { "R1": 10000, "Rf": 90000 },
+      "paramControls": [
+        { "key": "R1", "label": "R1", "unit": "kΩ", "min": 1, "max": 100,  "step": 1,  "default": 10,  "scale": 1000 },
+        { "key": "Rf", "label": "Rf", "unit": "kΩ", "min": 1, "max": 1000, "step": 10, "default": 90,  "scale": 1000 }
+      ],
+      "probes": { "CH1": "Entrada (Vin)", "CH2": "Salida (Vout)" },
+      "formula": "Av = 1 + Rf/R1",
+      "steps": [
+        { "n": 1, "title": "Montar",         "text": "Conecta Vin al pin 3 (+). R1 entre pin 2 (−) y GND. Rf entre pin 2 y pin 6 (salida). CH2 en pin 6." },
+        { "n": 2, "title": "Medir ganancia", "text": "Con R1=10 kΩ y Rf=90 kΩ: Av = 1+90/10 = 10. Vin=0,5 Vp → Vout ≈ 5 Vp, en fase." },
+        { "n": 3, "title": "Buffer (Av=1)",  "text": "Cambia Rf=0 (cortocircuito pin 2→6), R1=∞. Vout = Vin exacto. Útil para adaptación de impedancias." }
+      ]
+    },
+    {
+      "id": "opamp-integrator",
+      "title": "Integrador con Op-Amp",
+      "icon": "∫",
+      "description": "Circuito del laboratorio real (ver foto). Vout = −1/(RC)∫Vin dt. Señal senoidal → senoidal con desfase −90°. Cuadrada → triangular.",
+      "defaultFG":  { "freq": 249, "amplitude": 1.0, "waveform": "sine", "offset": 0, "enabled": true },
+      "defaultPSU": { "vPos": 15, "vNeg": -15 },
+      "defaultParams": { "R": 10000, "C": 1e-7, "Rf": 1000000 },
+      "paramControls": [
+        { "key": "R",  "label": "R",  "unit": "kΩ", "min": 1,   "max": 100,   "step": 1,    "default": 10,   "scale": 1000 },
+        { "key": "C",  "label": "C",  "unit": "nF", "min": 1,   "max": 10000, "step": 10,   "default": 100,  "scale": 1e-9 },
+        { "key": "Rf", "label": "Rf", "unit": "MΩ", "min": 0.1, "max": 10,    "step": 0.1,  "default": 1,    "scale": 1e6  }
+      ],
+      "probes": { "CH1": "Entrada (Vin)", "CH2": "Salida integrada (Vout)" },
+      "formula": "Vout = −1/(RC) ∫ Vin dt",
+      "steps": [
+        { "n": 1, "title": "Montar",            "text": "R=10 kΩ entre FG y pin 2 (−). C=100 nF entre pin 2 y pin 6. Rf=1 MΩ en paralelo con C (estabilidad DC). PSU ±15 V." },
+        { "n": 2, "title": "Señal senoidal",    "text": "FG: 249 Hz senoidal. CH2 debe ser senoidal con desfase ≈ −90° y amplitud ≈ Vin/(ωRC). Réplica exacta del experimento del laboratorio." },
+        { "n": 3, "title": "Señal cuadrada",    "text": "Cambia FG a cuadrada: CH2 debe verse como una señal triangular (la integral de una cuadrada)." },
+        { "n": 4, "title": "Variar frecuencia", "text": "Sube la frecuencia: la amplitud de salida cae (∝ 1/f). A muy alta frecuencia el op-amp no puede seguir (BW del LM741 ≈ 1 MHz)." }
+      ]
+    },
+    {
+      "id": "opamp-differentiator",
+      "title": "Diferenciador con Op-Amp",
+      "icon": "d/dt",
+      "description": "Vout = −RC × dVin/dt. Triangular → cuadrada; senoidal → cosenoidal (+90°). Rs limita la ganancia a alta frecuencia.",
+      "defaultFG":  { "freq": 249, "amplitude": 1.0, "waveform": "triangle", "offset": 0, "enabled": true },
+      "defaultPSU": { "vPos": 15, "vNeg": -15 },
+      "defaultParams": { "R": 10000, "C": 1e-7, "Rs": 100 },
+      "paramControls": [
+        { "key": "R",  "label": "R",  "unit": "kΩ", "min": 1, "max": 100,  "step": 1,   "default": 10, "scale": 1000 },
+        { "key": "C",  "label": "C",  "unit": "nF", "min": 1, "max": 1000, "step": 10,  "default": 100, "scale": 1e-9 },
+        { "key": "Rs", "label": "Rs", "unit": "Ω",  "min": 10,"max": 1000, "step": 10,  "default": 100 }
+      ],
+      "probes": { "CH1": "Entrada (Vin)", "CH2": "Salida diferenciada (Vout)" },
+      "formula": "Vout = −RC × dVin/dt",
+      "steps": [
+        { "n": 1, "title": "Montar",            "text": "C=100 nF en serie con Rs=100 Ω entre FG y pin 2 (−). R=10 kΩ entre pin 2 y pin 6 (salida)." },
+        { "n": 2, "title": "Señal triangular",  "text": "FG triangular a 249 Hz: CH2 debe ser aproximadamente cuadrada (derivada de una triangular)." },
+        { "n": 3, "title": "Señal senoidal",    "text": "FG senoidal: CH2 cosenoidal con desfase +90° respecto a CH1." },
+        { "n": 4, "title": "Ruido a alta f",    "text": "Sube la frecuencia: sin Rs el diferenciador amplificaría el ruido hasta saturar. Rs forma un polo que limita la ganancia." }
+      ]
+    },
+    {
+      "id": "bjt-common-emitter",
+      "title": "Amplificador Emisor Común (BJT)",
+      "icon": "Q",
+      "description": "Transistor NPN en configuración emisor-común. Av ≈ −gm·Rc. Señal de salida invertida y amplificada.",
+      "defaultFG":  { "freq": 1000, "amplitude": 0.02, "waveform": "sine", "offset": 0, "enabled": true },
+      "defaultPSU": { "vPos": 12, "vNeg": -15 },
+      "defaultParams": { "R1": 100000, "R2": 22000, "Rc": 4700, "RE": 1000, "beta": 200 },
+      "paramControls": [
+        { "key": "R1",   "label": "R1",  "unit": "kΩ", "min": 10,  "max": 1000, "step": 10, "default": 100,  "scale": 1000 },
+        { "key": "R2",   "label": "R2",  "unit": "kΩ", "min": 1,   "max": 200,  "step": 1,  "default": 22,   "scale": 1000 },
+        { "key": "Rc",   "label": "Rc",  "unit": "kΩ", "min": 0.1, "max": 20,   "step": 0.1,"default": 4.7,  "scale": 1000 },
+        { "key": "RE",   "label": "RE",  "unit": "kΩ", "min": 0.1, "max": 10,   "step": 0.1,"default": 1,    "scale": 1000 }
+      ],
+      "probes": { "CH1": "Base (entrada)", "CH2": "Colector (salida)" },
+      "formula": "Av = −gm·Rc = −(Ic/VT)·Rc",
+      "steps": [
+        { "n": 1, "title": "Punto de trabajo",  "text": "Con Vcc=+12 V (PSU V+), R1=100 kΩ, R2=22 kΩ: VB ≈ 2,4 V, IC ≈ 1,7 mA, VCE ≈ 4 V. Verifica que el transistor esté en zona activa." },
+        { "n": 2, "title": "Pequeña señal",     "text": "Vin = 20 mVp a 1 kHz (pequeña señal para no distorsionar). CH2 debe verse amplificada e invertida." },
+        { "n": 3, "title": "Medir ganancia",    "text": "Av ≈ −Rc/RE = −4,7 kΩ / 1 kΩ ≈ −4,7 (con degeneración de emisor sin bypass)." },
+        { "n": 4, "title": "Distorsión",        "text": "Sube Vin hasta ~200 mV: verás clipping asimétrico cuando el transistor satura o corta." }
+      ]
+    },
+    {
+      "id": "diode-half-wave",
+      "title": "Rectificador Media Onda",
+      "icon": "⊣",
+      "description": "Un diodo rectifica sólo el semiciclo positivo. Caída de tensión ≈ 0,7 V (silicio). Con condensador suavizador se reduce el rizado.",
+      "defaultFG":  { "freq": 50, "amplitude": 5.0, "waveform": "sine", "offset": 0, "enabled": true },
+      "defaultPSU": { "vPos": 15, "vNeg": -15 },
+      "defaultParams": { "Rload": 10000, "Csmooth": 0 },
+      "paramControls": [
+        { "key": "Rload",   "label": "Rload",  "unit": "kΩ", "min": 1, "max": 100, "step": 1,    "default": 10, "scale": 1000 },
+        { "key": "Csmooth", "label": "Csuav.", "unit": "µF", "min": 0, "max": 1000,"step": 10,   "default": 0,  "scale": 1e-6 }
+      ],
+      "probes": { "CH1": "Entrada AC (Vin)", "CH2": "Salida rectificada (Vout)" },
+      "formula": "Vout = max(Vin − 0,7 V, 0)",
+      "steps": [
+        { "n": 1, "title": "Sin condensador",  "text": "FG: senoidal 5 Vp a 50 Hz. CH2 muestra sólo semiciclos positivos (menos 0,7 V de caída del diodo)." },
+        { "n": 2, "title": "Con condensador",  "text": "Añade C=100 µF: el condensador se carga en los picos y descarga lentamente. Verás una tensión casi continua con pequeño rizado." },
+        { "n": 3, "title": "Carga la carga",   "text": "Reduce Rload a 1 kΩ: el rizado aumenta porque el condensador se descarga más rápido." }
+      ]
+    },
+    {
+      "id": "diode-full-wave",
+      "title": "Rectificador Onda Completa (Puente)",
+      "icon": "⊣⊢",
+      "description": "Puente de 4 diodos: rectifica ambos semiciclos. Frecuencia de rizado = 2× frecuencia de red. Caída total ≈ 1,4 V.",
+      "defaultFG":  { "freq": 50, "amplitude": 10.0, "waveform": "sine", "offset": 0, "enabled": true },
+      "defaultPSU": { "vPos": 15, "vNeg": -15 },
+      "defaultParams": { "Rload": 10000, "Csmooth": 0 },
+      "paramControls": [
+        { "key": "Rload",   "label": "Rload",  "unit": "kΩ", "min": 1, "max": 100, "step": 1,    "default": 10, "scale": 1000 },
+        { "key": "Csmooth", "label": "Csuav.", "unit": "µF", "min": 0, "max": 1000,"step": 10,   "default": 0,  "scale": 1e-6 }
+      ],
+      "probes": { "CH1": "Entrada AC (Vin)", "CH2": "Salida rectificada (Vout)" },
+      "formula": "Vout = |Vin| − 1,4 V (2 diodos)",
+      "steps": [
+        { "n": 1, "title": "Sin condensador", "text": "FG: 10 Vp a 50 Hz. CH2 muestra pulsos positivos a 100 Hz (doble de frecuencia)." },
+        { "n": 2, "title": "Con condensador", "text": "Añade C=470 µF. La tensión de rizado es mucho menor que en media onda (frecuencia doble = carga doble del condensador)." },
+        { "n": 3, "title": "Comparar",        "text": "Compara el rizado con C=100 µF vs 470 µF. Vripple ≈ Iload/(2f·C)." }
+      ]
+    }
+  ]
+}

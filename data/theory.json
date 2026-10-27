@@ -1,0 +1,361 @@
+{
+  "categories": [
+    {
+      "id": "amplificadores",
+      "name": "Amplificadores OpAmp",
+      "circuits": [
+        {
+          "id": "opamp-inverting-theory",
+          "name": "Amplificador Inversor",
+          "practica": "P3 · Montaje 1",
+          "type": "Amplificador operacional inversor (UA741)",
+          "components": "UA741/LM741, Ri = 1 kΩ (entrada a pin–), Rf = 2 kΩ (realimentación), ±15 V",
+          "signal": "Senoidal 1 Vp, 1 kHz",
+          "schematic": "<svg viewBox=\"0 0 280 150\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"4\" y=\"10\" fill=\"#555\" font-size=\"7\" font-family=\"monospace\">Amp. Inversor</text><line x1=\"10\" y1=\"57\" x2=\"60\" y2=\"57\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><rect x=\"60\" y=\"51\" width=\"30\" height=\"12\" fill=\"none\" stroke=\"#e8a000\" stroke-width=\"1.5\" rx=\"1\"/><text x=\"68\" y=\"49\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">Ri 1k</text><line x1=\"90\" y1=\"57\" x2=\"145\" y2=\"57\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"110\" y1=\"57\" x2=\"110\" y2=\"30\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"110\" y1=\"30\" x2=\"210\" y2=\"30\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"210\" y1=\"30\" x2=\"210\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><rect x=\"145\" y=\"24\" width=\"30\" height=\"12\" fill=\"none\" stroke=\"#e8a000\" stroke-width=\"1.5\" rx=\"1\"/><text x=\"150\" y=\"22\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">Rf 2k</text><polygon points=\"145,40 145,110 195,75\" fill=\"none\" stroke=\"#44ffff\" stroke-width=\"1.5\"/><text x=\"148\" y=\"61\" fill=\"#44ffff\" font-size=\"9\" font-family=\"monospace\">−</text><line x1=\"145\" y1=\"93\" x2=\"125\" y2=\"93\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"125\" y1=\"93\" x2=\"125\" y2=\"120\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"115\" y1=\"120\" x2=\"135\" y2=\"120\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"118\" y1=\"124\" x2=\"132\" y2=\"124\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"121\" y1=\"128\" x2=\"129\" y2=\"128\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><text x=\"148\" y=\"97\" fill=\"#44ffff\" font-size=\"9\" font-family=\"monospace\">+</text><line x1=\"195\" y1=\"75\" x2=\"260\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><circle cx=\"10\" cy=\"57\" r=\"3\" fill=\"#e8e000\"/><text x=\"4\" y=\"52\" fill=\"#e8e000\" font-size=\"8\" font-family=\"monospace\">CH1</text><circle cx=\"255\" cy=\"75\" r=\"3\" fill=\"#d040e0\"/><text x=\"249\" y=\"70\" fill=\"#d040e0\" font-size=\"8\" font-family=\"monospace\">CH2</text><text x=\"12\" y=\"70\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vin</text><text x=\"232\" y=\"88\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vout</text></svg>",
+          "scope_ch1": "Vin — señal de entrada",
+          "scope_ch2": "Vout — señal de salida",
+          "scope_notes": "CH2 aparece invertido respecto CH1 (180° de desfase) y con el doble de amplitud (Av = −2). Si CH1 = 1 Vp → CH2 = 2 Vp invertido.",
+          "key_formulas": [
+            "H(jω) = −Rf / Ri",
+            "Av = −Rf / Ri = −2",
+            "Vout = −(Rf/Ri) · Vin",
+            "Zin = Ri (baja impedancia de entrada)",
+            "Función X-Y: recta con pendiente negativa m = Av"
+          ],
+          "measurements": [
+            "Medir Vpico CH1 y Vpico CH2 con cursores",
+            "Calcular Av_medido = Vpico_CH2 / Vpico_CH1",
+            "Verificar Av ≈ −Rf/Ri = −2 (signo negativo = inversión)",
+            "Confirmar desfase 180° visualmente (CH2 va al revés que CH1)",
+            "Función X-Y: poner FG en CH1(X) y salida en CH2(Y) → recta pendiente −2"
+          ],
+          "steps": [
+            "Montar: Ri (1 kΩ) de Vin al pin(−). Rf (2 kΩ) del pin(−) a la salida. Pin(+) a GND. Alimentar ±15 V.",
+            "FG: senoidal, 1 Vp, 1 kHz. CH1 en Vin (antes de Ri), CH2 en Vout.",
+            "Ajustar escalas: CH1 = 0,5 V/div, CH2 = 1 V/div, t/div ≈ 0,2 ms.",
+            "Medir Vpico con cursores en CH1 y CH2.",
+            "Calcular Av = Vpico_out / Vpico_in y comparar con teórico −2.",
+            "Para la función X-Y: modo XY en el osciloscopio, CH1 = eje X, CH2 = eje Y → recta oblicua."
+          ],
+          "warning": "Si la salida está recortada (saturada), reducir la amplitud del FG (Vin < Vcc/|Av| = 7,5 V)"
+        },
+        {
+          "id": "opamp-noninv-theory",
+          "name": "Amplificador No-Inversor",
+          "practica": "P3 · Montaje 2",
+          "type": "Amplificador operacional no-inversor (UA741)",
+          "components": "UA741/LM741, Ri = 1 kΩ (pin– a GND), Rf = 1 kΩ (realimentación), ±15 V",
+          "signal": "Senoidal 1 Vp, 1 kHz",
+          "schematic": "<svg viewBox=\"0 0 280 150\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"4\" y=\"10\" fill=\"#555\" font-size=\"7\" font-family=\"monospace\">Amp. No-Inversor</text><line x1=\"10\" y1=\"93\" x2=\"145\" y2=\"93\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><polygon points=\"145,40 145,110 195,75\" fill=\"none\" stroke=\"#44ffff\" stroke-width=\"1.5\"/><text x=\"148\" y=\"61\" fill=\"#44ffff\" font-size=\"9\" font-family=\"monospace\">−</text><text x=\"148\" y=\"97\" fill=\"#44ffff\" font-size=\"9\" font-family=\"monospace\">+</text><line x1=\"195\" y1=\"75\" x2=\"220\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"220\" y1=\"75\" x2=\"220\" y2=\"30\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"220\" y1=\"30\" x2=\"120\" y2=\"30\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"120\" y1=\"30\" x2=\"120\" y2=\"57\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"120\" y1=\"57\" x2=\"145\" y2=\"57\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><rect x=\"155\" y=\"24\" width=\"30\" height=\"12\" fill=\"none\" stroke=\"#e8a000\" stroke-width=\"1.5\" rx=\"1\"/><text x=\"158\" y=\"22\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">Rf 1k</text><line x1=\"120\" y1=\"57\" x2=\"120\" y2=\"70\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><rect x=\"114\" y=\"70\" width=\"12\" height=\"24\" fill=\"none\" stroke=\"#e8a000\" stroke-width=\"1.5\" rx=\"1\"/><text x=\"128\" y=\"83\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">Ri 1k</text><line x1=\"120\" y1=\"94\" x2=\"120\" y2=\"120\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"110\" y1=\"120\" x2=\"130\" y2=\"120\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"113\" y1=\"124\" x2=\"127\" y2=\"124\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"116\" y1=\"128\" x2=\"124\" y2=\"128\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"220\" y1=\"75\" x2=\"265\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><circle cx=\"10\" cy=\"93\" r=\"3\" fill=\"#e8e000\"/><text x=\"4\" y=\"88\" fill=\"#e8e000\" font-size=\"8\" font-family=\"monospace\">CH1</text><circle cx=\"260\" cy=\"75\" r=\"3\" fill=\"#d040e0\"/><text x=\"249\" y=\"70\" fill=\"#d040e0\" font-size=\"8\" font-family=\"monospace\">CH2</text><text x=\"12\" y=\"106\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vin</text><text x=\"232\" y=\"88\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vout</text></svg>",
+          "scope_ch1": "Vin — señal de entrada (en pin+)",
+          "scope_ch2": "Vout — señal de salida",
+          "scope_notes": "CH2 está en fase con CH1 (0°) y con el doble de amplitud (Av = +2). Si CH1 = 1 Vp → CH2 = 2 Vp en fase.",
+          "key_formulas": [
+            "H(jω) = 1 + Rf / Ri",
+            "Av = 1 + Rf/Ri = 1 + 1 = 2",
+            "Vout = (1 + Rf/Ri) · Vin",
+            "Zin = muy alta (entrada al pin+)",
+            "Función X-Y: recta con pendiente positiva m = Av"
+          ],
+          "measurements": [
+            "Medir Vpico CH1 y Vpico CH2",
+            "Calcular Av_medido = Vpico_CH2 / Vpico_CH1",
+            "Verificar Av ≈ +2 (sin inversión)",
+            "Confirmar que CH1 y CH2 están en fase (0°)",
+            "Función X-Y → recta con pendiente +2"
+          ],
+          "steps": [
+            "Montar: Vin al pin(+). Ri (1 kΩ) del pin(−) a GND. Rf (1 kΩ) del pin(−) a la salida. ±15 V.",
+            "Para ganancia 2: necesitas Rf = Ri, con Ri = 1 kΩ → Rf = 1 kΩ.",
+            "FG: senoidal, 1 Vp, 1 kHz. CH1 en Vin, CH2 en Vout.",
+            "Ajustar escalas: CH1 = 0,5 V/div, CH2 = 1 V/div.",
+            "Verificar que CH1 y CH2 aparecen en fase y CH2 tiene doble amplitud.",
+            "Función X-Y: recta con pendiente positiva +2."
+          ],
+          "warning": null
+        },
+        {
+          "id": "opamp-summer-theory",
+          "name": "Sumador Inversor",
+          "practica": "P3 · Montaje 3",
+          "type": "Sumador inversor (amplificador sumador con OpAmp)",
+          "components": "UA741/LM741, R1 = R2 = R3 = 1 kΩ, Rf = 2 kΩ, V1=V2=0,5 Vp 1 kHz (AC), V3=5 V DC, ±15 V",
+          "signal": "V1=V2: senoidal 0,5 Vp 1 kHz; V3: continua 5 V",
+          "schematic": "<svg viewBox=\"0 0 280 150\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"4\" y=\"10\" fill=\"#555\" font-size=\"7\" font-family=\"monospace\">Sumador Inversor</text><line x1=\"10\" y1=\"45\" x2=\"55\" y2=\"45\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><rect x=\"55\" y=\"39\" width=\"22\" height=\"12\" fill=\"none\" stroke=\"#e8a000\" stroke-width=\"1.5\" rx=\"1\"/><text x=\"57\" y=\"37\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">R1</text><line x1=\"77\" y1=\"45\" x2=\"110\" y2=\"45\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"110\" y1=\"45\" x2=\"110\" y2=\"57\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"65\" x2=\"55\" y2=\"65\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><rect x=\"55\" y=\"59\" width=\"22\" height=\"12\" fill=\"none\" stroke=\"#e8a000\" stroke-width=\"1.5\" rx=\"1\"/><text x=\"57\" y=\"57\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">R2</text><line x1=\"77\" y1=\"65\" x2=\"110\" y2=\"65\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"110\" y1=\"65\" x2=\"110\" y2=\"57\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"85\" x2=\"55\" y2=\"85\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><rect x=\"55\" y=\"79\" width=\"22\" height=\"12\" fill=\"none\" stroke=\"#e8a000\" stroke-width=\"1.5\" rx=\"1\"/><text x=\"57\" y=\"77\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">R3</text><line x1=\"77\" y1=\"85\" x2=\"110\" y2=\"85\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"110\" y1=\"85\" x2=\"110\" y2=\"57\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"110\" y1=\"57\" x2=\"145\" y2=\"57\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"110\" y1=\"57\" x2=\"110\" y2=\"28\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"110\" y1=\"28\" x2=\"210\" y2=\"28\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"210\" y1=\"28\" x2=\"210\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><rect x=\"148\" y=\"22\" width=\"28\" height=\"12\" fill=\"none\" stroke=\"#e8a000\" stroke-width=\"1.5\" rx=\"1\"/><text x=\"150\" y=\"20\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">Rf 2k</text><polygon points=\"145,40 145,110 195,75\" fill=\"none\" stroke=\"#44ffff\" stroke-width=\"1.5\"/><text x=\"148\" y=\"61\" fill=\"#44ffff\" font-size=\"9\" font-family=\"monospace\">−</text><text x=\"148\" y=\"97\" fill=\"#44ffff\" font-size=\"9\" font-family=\"monospace\">+</text><line x1=\"145\" y1=\"93\" x2=\"130\" y2=\"93\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"130\" y1=\"93\" x2=\"130\" y2=\"120\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"120\" y1=\"120\" x2=\"140\" y2=\"120\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"123\" y1=\"124\" x2=\"137\" y2=\"124\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"126\" y1=\"128\" x2=\"134\" y2=\"128\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"210\" y1=\"75\" x2=\"265\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><text x=\"3\" y=\"43\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">V1</text><text x=\"3\" y=\"63\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">V2</text><text x=\"3\" y=\"83\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">V3</text><circle cx=\"10\" cy=\"45\" r=\"3\" fill=\"#e8e000\"/><text x=\"4\" y=\"40\" fill=\"#e8e000\" font-size=\"7\" font-family=\"monospace\">CH1</text><circle cx=\"260\" cy=\"75\" r=\"3\" fill=\"#d040e0\"/><text x=\"249\" y=\"70\" fill=\"#d040e0\" font-size=\"8\" font-family=\"monospace\">CH2</text><text x=\"232\" y=\"88\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vout</text></svg>",
+          "scope_ch1": "V1 o V2 — señal AC de referencia (0,5 Vp)",
+          "scope_ch2": "Vout — suma ponderada invertida",
+          "scope_notes": "CH2 = −(2·V1 + 2·V2 + 2·V3). Parte AC: ±2 Vp a 1 kHz. DC offset = −2×5 = −10 V. La señal oscila entre −8 V y −12 V. Usar acoplamiento AC en CH2 si el offset satura.",
+          "key_formulas": [
+            "Vout = −Rf·(V1/R1 + V2/R2 + V3/R3)",
+            "Con R iguales: Vout = −(Rf/R)·(V1+V2+V3)",
+            "Av = −Rf/R = −2 para cada entrada",
+            "Vout_AC = −2·(0,5+0,5) = −2 Vp (1 kHz)",
+            "Vout_DC = −2·5 V = −10 V"
+          ],
+          "measurements": [
+            "Medir Vpico de V1 (CH1) y Vout_AC (CH2 en AC coupling)",
+            "Verificar Av = −Rf/R = −2 para la componente AC",
+            "Calcular offset DC = −Rf/R3 · V3 = −10 V",
+            "Función X-Y con V1 en X y Vout en Y",
+            "Comprobar superposición: desconectar V3 y ver solo la parte AC"
+          ],
+          "steps": [
+            "Montar R1, R2, R3 (1 kΩ cada una) desde V1, V2, V3 al pin(−). Rf (2 kΩ) de salida a pin(−). Pin(+) a GND. ±15 V.",
+            "Aplicar V1=V2: senoidal 0,5 Vp 1 kHz. V3: fuente DC 5 V.",
+            "CH1 en V1, CH2 en Vout. En CH2 usar AC coupling para ver solo la parte alterna.",
+            "Verificar amplitud AC de CH2 ≈ 2 Vp (suma de V1 y V2 amplificados).",
+            "Cambiar CH2 a DC coupling: ver el offset de −10 V más la señal AC.",
+            "Desconectar V3 → Vout_DC desaparece, solo queda AC."
+          ],
+          "warning": "Con offset −10 V + 2 Vp, la salida está cerca del rail −15 V. Reducir V3 si se observa saturación."
+        }
+      ]
+    },
+    {
+      "id": "operaciones",
+      "name": "Operaciones con OpAmp",
+      "circuits": [
+        {
+          "id": "opamp-integrator-theory",
+          "name": "Integrador OpAmp",
+          "practica": "P3 M4 / P4 M2",
+          "type": "Integrador de OpAmp (circuito Miller)",
+          "components": "LM324/UA741, R = 10 kΩ (entrada a pin–), C = 1 µF (realimentación), ±15 V",
+          "signal": "Cuadrada 100 Hz, 300 mVp",
+          "schematic": "<svg viewBox=\"0 0 280 150\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"4\" y=\"10\" fill=\"#555\" font-size=\"7\" font-family=\"monospace\">Integrador OpAmp</text><line x1=\"10\" y1=\"57\" x2=\"55\" y2=\"57\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><rect x=\"55\" y=\"51\" width=\"30\" height=\"12\" fill=\"none\" stroke=\"#e8a000\" stroke-width=\"1.5\" rx=\"1\"/><text x=\"60\" y=\"49\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">R 10k</text><line x1=\"85\" y1=\"57\" x2=\"145\" y2=\"57\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"110\" y1=\"57\" x2=\"110\" y2=\"28\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"155\" y1=\"22\" x2=\"155\" y2=\"34\" stroke=\"#4488ff\" stroke-width=\"2\"/><line x1=\"160\" y1=\"22\" x2=\"160\" y2=\"34\" stroke=\"#4488ff\" stroke-width=\"2\"/><line x1=\"110\" y1=\"28\" x2=\"155\" y2=\"28\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"28\" x2=\"210\" y2=\"28\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"210\" y1=\"28\" x2=\"210\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><text x=\"148\" y=\"44\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">C 1µF</text><polygon points=\"145,40 145,110 195,75\" fill=\"none\" stroke=\"#44ffff\" stroke-width=\"1.5\"/><text x=\"148\" y=\"61\" fill=\"#44ffff\" font-size=\"9\" font-family=\"monospace\">−</text><text x=\"148\" y=\"97\" fill=\"#44ffff\" font-size=\"9\" font-family=\"monospace\">+</text><line x1=\"145\" y1=\"93\" x2=\"125\" y2=\"93\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"125\" y1=\"93\" x2=\"125\" y2=\"120\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"115\" y1=\"120\" x2=\"135\" y2=\"120\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"118\" y1=\"124\" x2=\"132\" y2=\"124\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"121\" y1=\"128\" x2=\"129\" y2=\"128\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"75\" x2=\"265\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><circle cx=\"10\" cy=\"57\" r=\"3\" fill=\"#e8e000\"/><text x=\"4\" y=\"52\" fill=\"#e8e000\" font-size=\"8\" font-family=\"monospace\">CH1</text><circle cx=\"260\" cy=\"75\" r=\"3\" fill=\"#d040e0\"/><text x=\"249\" y=\"70\" fill=\"#d040e0\" font-size=\"8\" font-family=\"monospace\">CH2</text><text x=\"12\" y=\"70\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vin</text><text x=\"232\" y=\"88\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vout</text></svg>",
+          "scope_ch1": "Vin — onda cuadrada de entrada",
+          "scope_ch2": "Vout — integral de Vin (onda triangular)",
+          "scope_notes": "Entrada cuadrada → salida triangular. La pendiente de CH2 es ±Vin/(RC). Con RC=10ms y T/2=5ms, la rampa sube/baja 150 mV cada semiciclo.",
+          "key_formulas": [
+            "Vout(t) = −(1/RC) · ∫Vin dt",
+            "τ = RC = 10kΩ · 1µF = 10 ms",
+            "Pendiente = −Vin / RC (V/s)",
+            "A t=0,01s con Vin=300mV: Vout = −300mV",
+            "H(jω) = −1/(jωRC) → |H| = 1/(ωRC)"
+          ],
+          "measurements": [
+            "Verificar forma de onda: cuadrada en CH1, triangular en CH2",
+            "Medir pendiente de CH2 (ΔV/Δt) y comparar con Vin/RC = 30 V/s",
+            "Calcular Vout a t=0,01 s: debería ser −300 mV",
+            "Medir Vpico CH2 y comparar con Vin·T/(2RC)",
+            "Función X-Y → figura en espiral / elipse (circuito reactivo)"
+          ],
+          "steps": [
+            "Montar R (10 kΩ) de Vin al pin(−). C (1 µF) de la salida al pin(−). Pin(+) a GND. ±15 V.",
+            "FG: onda CUADRADA, 100 Hz, 300 mV. CH1 en Vin, CH2 en Vout.",
+            "t/div ≈ 2 ms para ver 2 periodos completos.",
+            "Verificar que CH2 es triangular con rampa constante.",
+            "Para calcular la salida a t=0,01s: Vout = −(Vin/RC)·t = −(0,3/0,01)·0,01 = −0,3 V.",
+            "Función de transferencia X-Y: forma elíptica."
+          ],
+          "warning": "Si la salida se satura (CH2 llega a ±15 V y se queda ahí), aumentar la frecuencia de la señal cuadrada o reducir RC."
+        },
+        {
+          "id": "opamp-diff-theory",
+          "name": "Diferenciador OpAmp",
+          "practica": "Circuito complementario",
+          "type": "Diferenciador de OpAmp",
+          "components": "UA741/LM741, C = 0,1 µF (entrada a pin–), R = 10 kΩ (realimentación), ±15 V",
+          "signal": "Triangular o senoidal, 100–500 Hz",
+          "schematic": "<svg viewBox=\"0 0 280 150\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"4\" y=\"10\" fill=\"#555\" font-size=\"7\" font-family=\"monospace\">Diferenciador OpAmp</text><line x1=\"10\" y1=\"57\" x2=\"50\" y2=\"57\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"50\" y1=\"51\" x2=\"50\" y2=\"63\" stroke=\"#4488ff\" stroke-width=\"2\"/><line x1=\"55\" y1=\"51\" x2=\"55\" y2=\"63\" stroke=\"#4488ff\" stroke-width=\"2\"/><line x1=\"55\" y1=\"57\" x2=\"85\" y2=\"57\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><text x=\"44\" y=\"48\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">C 0.1µ</text><line x1=\"85\" y1=\"57\" x2=\"145\" y2=\"57\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"110\" y1=\"57\" x2=\"110\" y2=\"28\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"110\" y1=\"28\" x2=\"210\" y2=\"28\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"210\" y1=\"28\" x2=\"210\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><rect x=\"148\" y=\"22\" width=\"28\" height=\"12\" fill=\"none\" stroke=\"#e8a000\" stroke-width=\"1.5\" rx=\"1\"/><text x=\"148\" y=\"20\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">R 10k</text><polygon points=\"145,40 145,110 195,75\" fill=\"none\" stroke=\"#44ffff\" stroke-width=\"1.5\"/><text x=\"148\" y=\"61\" fill=\"#44ffff\" font-size=\"9\" font-family=\"monospace\">−</text><text x=\"148\" y=\"97\" fill=\"#44ffff\" font-size=\"9\" font-family=\"monospace\">+</text><line x1=\"145\" y1=\"93\" x2=\"125\" y2=\"93\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"125\" y1=\"93\" x2=\"125\" y2=\"120\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"115\" y1=\"120\" x2=\"135\" y2=\"120\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"118\" y1=\"124\" x2=\"132\" y2=\"124\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"121\" y1=\"128\" x2=\"129\" y2=\"128\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"75\" x2=\"265\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><circle cx=\"10\" cy=\"57\" r=\"3\" fill=\"#e8e000\"/><text x=\"4\" y=\"52\" fill=\"#e8e000\" font-size=\"8\" font-family=\"monospace\">CH1</text><circle cx=\"260\" cy=\"75\" r=\"3\" fill=\"#d040e0\"/><text x=\"249\" y=\"70\" fill=\"#d040e0\" font-size=\"8\" font-family=\"monospace\">CH2</text><text x=\"12\" y=\"70\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vin</text><text x=\"232\" y=\"88\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vout</text></svg>",
+          "scope_ch1": "Vin — señal de entrada",
+          "scope_ch2": "Vout — derivada de Vin",
+          "scope_notes": "Triangular → cuadrada en salida. Senoidal → cosenidal (desfase +90°). La amplitud de CH2 depende de la frecuencia (más frecuencia = más amplitud).",
+          "key_formulas": [
+            "Vout(t) = −RC · dVin/dt",
+            "τ = RC = 10kΩ · 0,1µF = 1 ms",
+            "H(jω) = −jωRC",
+            "|H(jω)| = ωRC (crece con frecuencia)",
+            "Fase = +90° (adelanto)"
+          ],
+          "measurements": [
+            "Con entrada triangular: verificar que la salida es cuadrada",
+            "Con entrada senoidal: medir amplitud de CH2 y verificar |H| = 2πf·RC",
+            "Verificar adelanto de 90° (CH2 adelanta a CH1)",
+            "Medir Vout para f=100 Hz: |H| = 2π·100·0,001 = 0,63"
+          ],
+          "steps": [
+            "Montar C (0,1 µF) de Vin al pin(−). R (10 kΩ) de la salida al pin(−). Pin(+) a GND. ±15 V.",
+            "FG: triangular, 100 Hz, 1 Vp. CH1 en Vin, CH2 en Vout.",
+            "Verificar que la salida es cuadrada (derivada de triangular).",
+            "Cambiar a senoidal: la salida es otra senoidal desfasada +90°.",
+            "Aumentar la frecuencia y observar que la amplitud de CH2 aumenta."
+          ],
+          "warning": "El diferenciador es inestable a altas frecuencias. En laboratorio se añade una resistencia pequeña (100 Ω) en serie con C para limitar la ganancia en alta frecuencia."
+        }
+      ]
+    },
+    {
+      "id": "filtros-activos",
+      "name": "Filtros Activos",
+      "circuits": [
+        {
+          "id": "active-hp-filter-theory",
+          "name": "Filtro Activo Paso Alto Inv.",
+          "practica": "P4 · Montaje 1",
+          "type": "Filtro paso alto activo inversor de 1er orden (LM741)",
+          "components": "LM741, R1 = 1 kΩ, R2 = 10 kΩ (Rf), R_cinta = 10 kΩ, C_cinta = 100 nF, ±15 V",
+          "signal": "Senoidal, amplitud libre, frecuencia variable 100 Hz–100 kHz",
+          "schematic": "<svg viewBox=\"0 0 280 150\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"4\" y=\"10\" fill=\"#555\" font-size=\"7\" font-family=\"monospace\">Filtro Act. PA Inv.</text><line x1=\"10\" y1=\"57\" x2=\"50\" y2=\"57\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><rect x=\"50\" y=\"51\" width=\"22\" height=\"12\" fill=\"none\" stroke=\"#e8a000\" stroke-width=\"1.5\" rx=\"1\"/><text x=\"52\" y=\"49\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">R1 1k</text><line x1=\"72\" y1=\"57\" x2=\"145\" y2=\"57\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"100\" y1=\"57\" x2=\"100\" y2=\"68\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><rect x=\"94\" y=\"68\" width=\"12\" height=\"18\" fill=\"none\" stroke=\"#e8a000\" stroke-width=\"1.5\" rx=\"1\"/><text x=\"108\" y=\"79\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">Rc 10k</text><line x1=\"100\" y1=\"86\" x2=\"100\" y2=\"98\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"94\" y1=\"98\" x2=\"106\" y2=\"98\" stroke=\"#4488ff\" stroke-width=\"2\"/><line x1=\"94\" y1=\"102\" x2=\"106\" y2=\"102\" stroke=\"#4488ff\" stroke-width=\"2\"/><text x=\"108\" y=\"102\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">Cc 100n</text><line x1=\"100\" y1=\"102\" x2=\"100\" y2=\"120\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"90\" y1=\"120\" x2=\"110\" y2=\"120\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"93\" y1=\"124\" x2=\"107\" y2=\"124\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"128\" x2=\"104\" y2=\"128\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"120\" y1=\"57\" x2=\"120\" y2=\"28\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"120\" y1=\"28\" x2=\"210\" y2=\"28\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"210\" y1=\"28\" x2=\"210\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><rect x=\"152\" y=\"22\" width=\"24\" height=\"12\" fill=\"none\" stroke=\"#e8a000\" stroke-width=\"1.5\" rx=\"1\"/><text x=\"150\" y=\"20\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">R2 10k</text><polygon points=\"145,40 145,110 195,75\" fill=\"none\" stroke=\"#44ffff\" stroke-width=\"1.5\"/><text x=\"148\" y=\"61\" fill=\"#44ffff\" font-size=\"9\" font-family=\"monospace\">−</text><text x=\"148\" y=\"97\" fill=\"#44ffff\" font-size=\"9\" font-family=\"monospace\">+</text><line x1=\"145\" y1=\"93\" x2=\"133\" y2=\"93\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"133\" y1=\"93\" x2=\"133\" y2=\"138\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"123\" y1=\"138\" x2=\"143\" y2=\"138\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"126\" y1=\"142\" x2=\"140\" y2=\"142\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"146\" x2=\"137\" y2=\"146\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"210\" y1=\"75\" x2=\"265\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><circle cx=\"10\" cy=\"57\" r=\"3\" fill=\"#e8e000\"/><text x=\"4\" y=\"52\" fill=\"#e8e000\" font-size=\"8\" font-family=\"monospace\">CH1</text><circle cx=\"260\" cy=\"75\" r=\"3\" fill=\"#d040e0\"/><text x=\"249\" y=\"70\" fill=\"#d040e0\" font-size=\"8\" font-family=\"monospace\">CH2</text><text x=\"12\" y=\"70\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vin</text><text x=\"232\" y=\"88\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vout</text></svg>",
+          "scope_ch1": "Vin — señal de entrada",
+          "scope_ch2": "Vout — señal filtrada y amplificada",
+          "scope_notes": "Por debajo de fc ≈ 159 Hz: Vout atenuada. Por encima de fc: ganancia constante ≈ −R2/R1 = −10 (20 dB). En fc: |Vout| = 0,707 · Vout_max (−3 dB). Fase en fc = −45° + 180° = 135°.",
+          "key_formulas": [
+            "fc = 1 / (2π · R_cinta · C_cinta)",
+            "fc = 1 / (2π · 10kΩ · 100nF) ≈ 159 Hz",
+            "Ganancia en paso: Av = −R2/R1 = −10",
+            "En fc: |H| = Av/√2 = −3 dB",
+            "1 década después de fc: ganancia = Av (ya en zona plana)",
+            "Desfase en fc = 135° (90° filtro + 180° inversión − 45° HP)"
+          ],
+          "measurements": [
+            "Bajar frecuencia hasta que Vout = 0,707 · Vout_max → esa es fc",
+            "Medir fc experimental y comparar con 1/(2πRC) ≈ 159 Hz",
+            "Medir desfase en fc: debería ser ≈ 135° (CH2 adelanta a CH1 en 135°)",
+            "Anotar ganancia 1 década ANTES de fc (atenuación) y DESPUÉS (plana)",
+            "Bode: barrer frecuencia y anotar |Vout/Vin| en dB vs f",
+            "Función X-Y en fc → elipse (elipse degenerada a recta lejos de fc)"
+          ],
+          "steps": [
+            "Montar R1 (1 kΩ) de Vin al pin(−). R_cinta (10 kΩ) + C_cinta (100 nF) en serie del pin(−) a GND. R2 (10 kΩ) de salida a pin(−). Pin(+) a GND. ±15 V.",
+            "FG: senoidal, amplitud baja (ej. 200 mV) para no saturar. Empezar a 100 Hz.",
+            "CH1 en Vin, CH2 en Vout. Subir frecuencia de 100 Hz a 100 kHz.",
+            "En frecuencias altas (>1 kHz): Vout/Vin ≈ 10 (ganancia máxima −10).",
+            "Bajar frecuencia hasta que CH2 baje a 0,707 del máximo → fc ≈ 159 Hz.",
+            "En fc: medir el desfase entre CH1 y CH2 (≈ 135°). Entregar bode marcando fc y −3 dB."
+          ],
+          "warning": "La práctica pide marcar fc en el bode de módulo (dB) y el desfase en el bode de argumento. Preparar tabla de f vs |H|_dB antes del lab."
+        }
+      ]
+    },
+    {
+      "id": "filtros-pasivos",
+      "name": "Filtros Pasivos y Diodos",
+      "circuits": [
+        {
+          "id": "rc-lowpass-theory",
+          "name": "Filtro RC Paso Bajo",
+          "practica": "Circuito base",
+          "type": "Filtro RC paso bajo de 1er orden",
+          "components": "R = 1 kΩ, C = 1 µF (valores típicos de lab)",
+          "signal": "Senoidal, frecuencia variable",
+          "schematic": "<svg viewBox=\"0 0 280 150\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"4\" y=\"10\" fill=\"#555\" font-size=\"7\" font-family=\"monospace\">RC Paso Bajo</text><line x1=\"10\" y1=\"75\" x2=\"55\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><rect x=\"55\" y=\"69\" width=\"35\" height=\"12\" fill=\"none\" stroke=\"#e8a000\" stroke-width=\"1.5\" rx=\"1\"/><text x=\"61\" y=\"67\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">R 1k</text><line x1=\"90\" y1=\"75\" x2=\"155\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"155\" y1=\"75\" x2=\"155\" y2=\"95\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"145\" y1=\"95\" x2=\"165\" y2=\"95\" stroke=\"#4488ff\" stroke-width=\"2\"/><line x1=\"145\" y1=\"100\" x2=\"165\" y2=\"100\" stroke=\"#4488ff\" stroke-width=\"2\"/><line x1=\"155\" y1=\"100\" x2=\"155\" y2=\"120\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"143\" y1=\"120\" x2=\"167\" y2=\"120\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"147\" y1=\"124\" x2=\"163\" y2=\"124\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"151\" y1=\"128\" x2=\"159\" y2=\"128\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><text x=\"168\" y=\"99\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">C 1µF</text><line x1=\"155\" y1=\"75\" x2=\"265\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"75\" x2=\"10\" y2=\"120\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"120\" x2=\"155\" y2=\"120\" stroke=\"#00cc55\" stroke-width=\"1\"/><circle cx=\"15\" cy=\"75\" r=\"3\" fill=\"#e8e000\"/><text x=\"8\" y=\"70\" fill=\"#e8e000\" font-size=\"8\" font-family=\"monospace\">CH1</text><circle cx=\"260\" cy=\"75\" r=\"3\" fill=\"#d040e0\"/><text x=\"249\" y=\"70\" fill=\"#d040e0\" font-size=\"8\" font-family=\"monospace\">CH2</text><text x=\"16\" y=\"88\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vin</text><text x=\"232\" y=\"88\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vout</text></svg>",
+          "scope_ch1": "Vin — antes de R",
+          "scope_ch2": "Vout — en paralelo con C",
+          "scope_notes": "Por debajo de fc: Vout ≈ Vin. En fc: Vout = 0,707·Vin (−3 dB), desfase = −45°. Por encima: Vout cae −20 dB/década. La señal de salida siempre va retrasada.",
+          "key_formulas": [
+            "H(jω) = 1 / (1 + jωRC)",
+            "fc = 1 / (2πRC)",
+            "En fc: |H| = 1/√2 = 0,707 (−3 dB)",
+            "Fase en fc = −45°",
+            "Pendiente post-fc = −20 dB/década"
+          ],
+          "measurements": [
+            "Subir frecuencia hasta que Vout = 0,707·Vin → fc medida",
+            "Comparar fc_med con 1/(2πRC)",
+            "Verificar desfase = −45° en fc (CH2 retrasa a CH1)",
+            "1 década después de fc: |H| ≈ 0,1 (−20 dB)"
+          ],
+          "steps": [
+            "Montar R en serie con Vin. C de la unión R-C a GND. CH1 en Vin, CH2 en Vout (nodo intermedio).",
+            "Variar frecuencia del FG. Observar cómo CH2 se atenúa al subir f.",
+            "Encontrar fc: donde Vout = 0,707·Vin.",
+            "Medir desfase en fc con los cursores temporales."
+          ],
+          "warning": null
+        },
+        {
+          "id": "rc-highpass-theory",
+          "name": "Filtro RC Paso Alto",
+          "practica": "Circuito base",
+          "type": "Filtro RC paso alto de 1er orden",
+          "components": "C = 1 µF, R = 1 kΩ (valores típicos de lab)",
+          "signal": "Senoidal, frecuencia variable",
+          "schematic": "<svg viewBox=\"0 0 280 150\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"4\" y=\"10\" fill=\"#555\" font-size=\"7\" font-family=\"monospace\">RC Paso Alto</text><line x1=\"10\" y1=\"75\" x2=\"50\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"50\" y1=\"65\" x2=\"50\" y2=\"85\" stroke=\"#4488ff\" stroke-width=\"2\"/><line x1=\"56\" y1=\"65\" x2=\"56\" y2=\"85\" stroke=\"#4488ff\" stroke-width=\"2\"/><text x=\"40\" y=\"60\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">C 1µF</text><line x1=\"56\" y1=\"75\" x2=\"155\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"115\" y1=\"75\" x2=\"115\" y2=\"90\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><rect x=\"109\" y=\"90\" width=\"12\" height=\"28\" fill=\"none\" stroke=\"#e8a000\" stroke-width=\"1.5\" rx=\"1\"/><text x=\"123\" y=\"106\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">R 1k</text><line x1=\"115\" y1=\"118\" x2=\"115\" y2=\"130\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"103\" y1=\"130\" x2=\"127\" y2=\"130\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"106\" y1=\"134\" x2=\"124\" y2=\"134\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"109\" y1=\"138\" x2=\"121\" y2=\"138\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"155\" y1=\"75\" x2=\"265\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"75\" x2=\"10\" y2=\"130\" stroke=\"#00cc55\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"103\" y2=\"130\" stroke=\"#00cc55\" stroke-width=\"1\"/><circle cx=\"15\" cy=\"75\" r=\"3\" fill=\"#e8e000\"/><text x=\"8\" y=\"70\" fill=\"#e8e000\" font-size=\"8\" font-family=\"monospace\">CH1</text><circle cx=\"260\" cy=\"75\" r=\"3\" fill=\"#d040e0\"/><text x=\"249\" y=\"70\" fill=\"#d040e0\" font-size=\"8\" font-family=\"monospace\">CH2</text><text x=\"16\" y=\"88\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vin</text><text x=\"232\" y=\"88\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vout</text></svg>",
+          "scope_ch1": "Vin — antes de C",
+          "scope_ch2": "Vout — en paralelo con R",
+          "scope_notes": "Por encima de fc: Vout ≈ Vin. En fc: Vout = 0,707·Vin (−3 dB), desfase = +45°. Por debajo: Vout cae −20 dB/década. La señal de salida siempre va adelantada.",
+          "key_formulas": [
+            "H(jω) = jωRC / (1 + jωRC)",
+            "fc = 1 / (2πRC)",
+            "En fc: |H| = 1/√2 = 0,707 (−3 dB)",
+            "Fase en fc = +45°",
+            "Pendiente pre-fc = +20 dB/década"
+          ],
+          "measurements": [
+            "Bajar frecuencia hasta que Vout = 0,707·Vin → fc medida",
+            "Verificar desfase = +45° en fc (CH2 adelanta a CH1)",
+            "1 década antes de fc: |H| ≈ 0,1"
+          ],
+          "steps": [
+            "Montar C en serie con Vin. R de la unión C-R a GND. CH1 en Vin, CH2 en Vout (nodo intermedio).",
+            "Variar frecuencia. A bajas f: CH2 está muy atenuado.",
+            "Encontrar fc donde Vout = 0,707·Vin.",
+            "Medir adelanto de fase +45° en fc."
+          ],
+          "warning": null
+        },
+        {
+          "id": "diode-halfwave-theory",
+          "name": "Rectificador Media Onda",
+          "practica": "Circuito de diodos",
+          "type": "Rectificador de media onda con diodo",
+          "components": "Diodo 1N4007 (o similar), RL = 1 kΩ",
+          "signal": "Senoidal 5 Vp, 50–1000 Hz",
+          "schematic": "<svg viewBox=\"0 0 280 150\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"4\" y=\"10\" fill=\"#555\" font-size=\"7\" font-family=\"monospace\">Rectif. Media Onda</text><line x1=\"10\" y1=\"75\" x2=\"70\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><polygon points=\"70,65 70,85 95,75\" fill=\"none\" stroke=\"#ff4444\" stroke-width=\"1.5\"/><line x1=\"95\" y1=\"65\" x2=\"95\" y2=\"85\" stroke=\"#ff4444\" stroke-width=\"2\"/><line x1=\"95\" y1=\"75\" x2=\"155\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><text x=\"70\" y=\"60\" fill=\"#ff4444\" font-size=\"8\" font-family=\"monospace\">1N4007</text><line x1=\"155\" y1=\"75\" x2=\"155\" y2=\"90\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><rect x=\"149\" y=\"90\" width=\"12\" height=\"28\" fill=\"none\" stroke=\"#e8a000\" stroke-width=\"1.5\" rx=\"1\"/><text x=\"163\" y=\"106\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">RL 1k</text><line x1=\"155\" y1=\"118\" x2=\"155\" y2=\"130\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"143\" y1=\"130\" x2=\"167\" y2=\"130\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"147\" y1=\"134\" x2=\"163\" y2=\"134\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"151\" y1=\"138\" x2=\"159\" y2=\"138\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"155\" y1=\"75\" x2=\"265\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"75\" x2=\"10\" y2=\"130\" stroke=\"#00cc55\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"143\" y2=\"130\" stroke=\"#00cc55\" stroke-width=\"1\"/><circle cx=\"15\" cy=\"75\" r=\"3\" fill=\"#e8e000\"/><text x=\"8\" y=\"70\" fill=\"#e8e000\" font-size=\"8\" font-family=\"monospace\">CH1</text><circle cx=\"260\" cy=\"75\" r=\"3\" fill=\"#d040e0\"/><text x=\"249\" y=\"70\" fill=\"#d040e0\" font-size=\"8\" font-family=\"monospace\">CH2</text><text x=\"16\" y=\"88\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vin</text><text x=\"232\" y=\"88\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vout</text><text x=\"72\" y=\"100\" fill=\"#555\" font-size=\"8\" font-family=\"monospace\">Vd≈0.7V</text></svg>",
+          "scope_ch1": "Vin — senoidal completa",
+          "scope_ch2": "Vout — semiciclos positivos",
+          "scope_notes": "CH2 muestra solo los semiciclos positivos (recortados en 0,7 V por la caída del diodo). Los semiciclos negativos son cero. Vout_max = Vin_max − 0,7 V.",
+          "key_formulas": [
+            "Vout = max(Vin − 0,7 V, 0)",
+            "Vout_pico = Vin_pico − 0,7 V",
+            "Vout_media = Vout_pico / π ≈ 0,318 · Vout_pico"
+          ],
+          "measurements": [
+            "Medir Vpico CH1 (Vin) y CH2 (Vout)",
+            "Verificar caída diodo: ΔV = Vin_pico − Vout_pico ≈ 0,7 V",
+            "Con RL: calcular I_media = Vout_media / RL"
+          ],
+          "steps": [
+            "Montar diodo en serie (ánodo a Vin, cátodo a Vout). RL de Vout a GND.",
+            "FG: senoidal 5 Vp, 100 Hz. CH1 en Vin, CH2 en Vout.",
+            "Observar semiciclos: CH2 solo tiene los positivos.",
+            "Medir Vpico CH2 y verificar que es Vpico_CH1 − 0,7 V."
+          ],
+          "warning": null
+        },
+        {
+          "id": "diode-fullwave-theory",
+          "name": "Rectificador Onda Completa",
+          "practica": "Circuito de diodos",
+          "type": "Rectificador de onda completa en puente (puente de Graetz)",
+          "components": "4× diodo 1N4007, RL = 1 kΩ",
+          "signal": "Senoidal 5 Vp, 50–1000 Hz",
+          "schematic": "<svg viewBox=\"0 0 280 150\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"4\" y=\"10\" fill=\"#555\" font-size=\"7\" font-family=\"monospace\">Puente de Graetz</text><line x1=\"10\" y1=\"55\" x2=\"50\" y2=\"55\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"95\" x2=\"50\" y2=\"95\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><text x=\"4\" y=\"50\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">AC+</text><text x=\"4\" y=\"100\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">AC−</text><line x1=\"50\" y1=\"55\" x2=\"80\" y2=\"40\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><polygon points=\"80,35 85,45 75,45\" fill=\"none\" stroke=\"#ff4444\" stroke-width=\"1.5\"/><line x1=\"84\" y1=\"33\" x2=\"84\" y2=\"47\" stroke=\"#ff4444\" stroke-width=\"1.5\"/><line x1=\"84\" y1=\"40\" x2=\"140\" y2=\"40\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"50\" y1=\"95\" x2=\"80\" y2=\"110\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><polygon points=\"75,108 85,108 80,100\" fill=\"none\" stroke=\"#ff4444\" stroke-width=\"1.5\"/><line x1=\"74\" y1=\"110\" x2=\"86\" y2=\"110\" stroke=\"#ff4444\" stroke-width=\"1.5\"/><line x1=\"80\" y1=\"100\" x2=\"80\" y2=\"40\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"140\" y1=\"40\" x2=\"160\" y2=\"40\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><polygon points=\"155,35 165,35 160,45\" fill=\"none\" stroke=\"#ff4444\" stroke-width=\"1.5\"/><line x1=\"154\" y1=\"37\" x2=\"166\" y2=\"37\" stroke=\"#ff4444\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"37\" x2=\"160\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"80\" y1=\"110\" x2=\"160\" y2=\"110\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"110\" x2=\"160\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><text x=\"54\" y=\"35\" fill=\"#ff4444\" font-size=\"7\" font-family=\"monospace\">D1</text><text x=\"54\" y=\"118\" fill=\"#ff4444\" font-size=\"7\" font-family=\"monospace\">D2</text><text x=\"141\" y=\"30\" fill=\"#ff4444\" font-size=\"7\" font-family=\"monospace\">D3</text><text x=\"141\" y=\"120\" fill=\"#ff4444\" font-size=\"7\" font-family=\"monospace\">D4</text><line x1=\"200\" y1=\"75\" x2=\"200\" y2=\"88\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><rect x=\"194\" y=\"88\" width=\"12\" height=\"28\" fill=\"none\" stroke=\"#e8a000\" stroke-width=\"1.5\" rx=\"1\"/><text x=\"213\" y=\"104\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">RL 1k</text><line x1=\"200\" y1=\"116\" x2=\"200\" y2=\"130\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"188\" y1=\"130\" x2=\"212\" y2=\"130\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"191\" y1=\"134\" x2=\"209\" y2=\"134\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"194\" y1=\"138\" x2=\"206\" y2=\"138\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"75\" x2=\"200\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"200\" y1=\"75\" x2=\"255\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"110\" x2=\"200\" y2=\"110\" stroke=\"#00cc55\" stroke-width=\"1\"/><line x1=\"200\" y1=\"110\" x2=\"200\" y2=\"130\" stroke=\"#00cc55\" stroke-width=\"1\"/><circle cx=\"15\" cy=\"55\" r=\"3\" fill=\"#e8e000\"/><text x=\"8\" y=\"50\" fill=\"#e8e000\" font-size=\"8\" font-family=\"monospace\">CH1</text><circle cx=\"250\" cy=\"75\" r=\"3\" fill=\"#d040e0\"/><text x=\"238\" y=\"70\" fill=\"#d040e0\" font-size=\"8\" font-family=\"monospace\">CH2</text><text x=\"218\" y=\"88\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vout</text></svg>",
+          "scope_ch1": "Vin — senoidal completa",
+          "scope_ch2": "Vout — valor absoluto de Vin (rectificado)",
+          "scope_notes": "CH2 muestra |Vin| − 1,4 V. Ambos semiciclos aparecen positivos. La frecuencia de CH2 es el DOBLE que la de CH1. Vout_max = Vin_max − 1,4 V (dos caídas de diodo).",
+          "key_formulas": [
+            "Vout = max(|Vin| − 1,4 V, 0)",
+            "Vout_pico = Vin_pico − 1,4 V",
+            "Vout_media = 2 · Vout_pico / π ≈ 0,637 · Vout_pico",
+            "Frecuencia_out = 2 · Frecuencia_in"
+          ],
+          "measurements": [
+            "Medir Vpico CH2 y verificar = Vpico_CH1 − 1,4 V",
+            "Verificar que f_CH2 = 2 · f_CH1",
+            "Calcular Vout_media = 2·Vout_pico/π"
+          ],
+          "steps": [
+            "Montar puente: 4 diodos en configuración puente de Graetz. RL entre salida + y −.",
+            "FG: senoidal 5 Vp, 100 Hz. CH1 en Vin, CH2 en Vout.",
+            "Verificar que CH2 tiene TODOS los semiciclos positivos.",
+            "Comparar frecuencia de CH2 con CH1 (doble).",
+            "Medir caída: ΔV = 1,4 V (dos diodos en conducción)."
+          ],
+          "warning": null
+        }
+      ]
+    }
+  ]
+}

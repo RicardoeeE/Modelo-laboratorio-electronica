@@ -50,6 +50,10 @@ node --test tests/medidas.test.mjs
 
 Contrastan las medidas del osciloscopio con el cálculo: frecuencia, Vpp y fase de los filtros en su frecuencia de corte, del integrador, del diferenciador y de los amplificadores con op-amp.
 
+## Cómo está hecho
+
+Hecho con ayuda de IA. Las medidas de filtros, integrador, diferenciador y amplificadores con op-amp se comprueban con pruebas contra la teoría; las de transistor y rectificadores, todavía no.
+
 ## Tecnología
 
 - HTML5 + CSS3 + JavaScript ES Modules puro — sin frameworks ni build tools

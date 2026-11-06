@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab Virtual de Electrónica</title>
+  <meta name="description" content="Simulador web de laboratorio de electrónica analógica: osciloscopio, generador, fuente y protoboard, con 11 experimentos y medidas contrastadas con el cálculo.">
+  <meta name="theme-color" content="#161a1f">
+  <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style/main.css">
   <link rel="stylesheet" href="style/instruments.css">
   <link rel="stylesheet" href="style/breadboard.css">
@@ -16,11 +19,18 @@
 
   <!-- ── Navbar ───────────────────────────────────────────────────────── -->
   <nav id="navbar">
-    <span class="nav-title">◈ Lab Virtual de Electrónica</span>
-    <div class="nav-mode">
-      <button class="mode-btn active" id="btn-mode-experiment">Experimentos</button>
-      <button class="mode-btn"        id="btn-mode-freeform">Protoboard libre</button>
-      <button class="mode-btn"        id="btn-mode-theory">Teoría</button>
+    <div class="nav-brand">
+      <img class="nav-mark" src="assets/icons/favicon.svg" width="24" height="24" alt="">
+      <span class="nav-title">Lab Virtual de Electrónica</span>
+      <span class="nav-tagline">Osciloscopio, generador, fuente y protoboard en el navegador</span>
+    </div>
+    <div class="nav-actions">
+      <div class="nav-mode">
+        <button class="mode-btn active" id="btn-mode-experiment">Experimentos</button>
+        <button class="mode-btn"        id="btn-mode-freeform">Protoboard libre</button>
+        <button class="mode-btn"        id="btn-mode-theory">Teoría</button>
+      </div>
+      <a class="nav-link" href="https://github.com/RicardoeeE/Modelo-laboratorio-electronica" rel="noopener">Código</a>
     </div>
   </nav>
 
@@ -49,8 +59,8 @@
         <!-- Oscilloscope -->
         <div class="scope-panel" id="scope-panel">
           <div class="scope-bezel">
-            <span class="scope-brand">RS PRO</span>
-            <span class="scope-model">RSDS 1052DL+ · 50 MHz · 500 MSa/s</span>
+            <span class="scope-brand">Osciloscopio</span>
+            <span class="scope-model">RS PRO RSDS 1052DL+ · 50 MHz · 500 MSa/s</span>
           </div>
           <div class="scope-canvas-wrap">
             <canvas id="scope-canvas"></canvas>

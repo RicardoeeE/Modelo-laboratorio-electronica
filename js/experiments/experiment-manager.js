@@ -47,16 +47,28 @@ function _autoTimeDiv(freq) {
   return +(period / 4).toPrecision(2);
 }
 
+function _groupName(id) {
+  if (id.startsWith('rc-') || id.startsWith('rl-')) return 'Filtros pasivos';
+  if (id.startsWith('opamp-')) return 'Amplificador operacional';
+  if (id.startsWith('bjt-')) return 'Transistor';
+  return 'Diodos';
+}
+
 function _renderList() {
   if (!_sidebarEl) return;
   const current = getState().circuit.activeExperiment;
 
-  _sidebarEl.innerHTML = _experiments.map(exp => `
-    <div class="exp-item ${exp.id === current ? 'active' : ''}" data-id="${exp.id}">
+  let group = null;
+  _sidebarEl.innerHTML = _experiments.map(exp => {
+    const name = _groupName(exp.id);
+    const header = name !== group ? `<div class="exp-group">${name}</div>` : '';
+    group = name;
+    return `${header}
+    <button class="exp-item ${exp.id === current ? 'active' : ''}" data-id="${exp.id}">
       <span class="exp-icon">${exp.icon}</span>
       <span class="exp-name">${exp.title}</span>
-    </div>
-  `).join('');
+    </button>`;
+  }).join('');
 
   _sidebarEl.querySelectorAll('[data-id]').forEach(el => {
     el.addEventListener('click', () => loadExperiment(el.dataset.id));
@@ -91,8 +103,8 @@ function _renderGuide(exp) {
     </div>
 
     <div class="guide-nav">
-      <button class="nav-btn" id="step-prev" ${step === 0 ? 'disabled' : ''}>◄ Anterior</button>
-      <button class="nav-btn" id="step-next" ${step === totalSteps - 1 ? 'disabled' : ''}>Siguiente ►</button>
+      <button class="nav-btn" id="step-prev" ${step === 0 ? 'disabled' : ''}>← Anterior</button>
+      <button class="nav-btn" id="step-next" ${step === totalSteps - 1 ? 'disabled' : ''}>Siguiente →</button>
     </div>
   `;
 

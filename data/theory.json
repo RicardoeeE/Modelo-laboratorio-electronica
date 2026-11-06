@@ -160,13 +160,13 @@
           "schematic": "<svg viewBox=\"0 0 280 150\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"4\" y=\"10\" fill=\"#555\" font-size=\"7\" font-family=\"monospace\">Diferenciador OpAmp</text><line x1=\"10\" y1=\"57\" x2=\"50\" y2=\"57\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"50\" y1=\"51\" x2=\"50\" y2=\"63\" stroke=\"#4488ff\" stroke-width=\"2\"/><line x1=\"55\" y1=\"51\" x2=\"55\" y2=\"63\" stroke=\"#4488ff\" stroke-width=\"2\"/><line x1=\"55\" y1=\"57\" x2=\"85\" y2=\"57\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><text x=\"44\" y=\"48\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">C 0.1µ</text><line x1=\"85\" y1=\"57\" x2=\"145\" y2=\"57\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"110\" y1=\"57\" x2=\"110\" y2=\"28\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"110\" y1=\"28\" x2=\"210\" y2=\"28\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"210\" y1=\"28\" x2=\"210\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><rect x=\"148\" y=\"22\" width=\"28\" height=\"12\" fill=\"none\" stroke=\"#e8a000\" stroke-width=\"1.5\" rx=\"1\"/><text x=\"148\" y=\"20\" fill=\"#888\" font-size=\"8\" font-family=\"monospace\">R 10k</text><polygon points=\"145,40 145,110 195,75\" fill=\"none\" stroke=\"#44ffff\" stroke-width=\"1.5\"/><text x=\"148\" y=\"61\" fill=\"#44ffff\" font-size=\"9\" font-family=\"monospace\">−</text><text x=\"148\" y=\"97\" fill=\"#44ffff\" font-size=\"9\" font-family=\"monospace\">+</text><line x1=\"145\" y1=\"93\" x2=\"125\" y2=\"93\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"125\" y1=\"93\" x2=\"125\" y2=\"120\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"115\" y1=\"120\" x2=\"135\" y2=\"120\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"118\" y1=\"124\" x2=\"132\" y2=\"124\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"121\" y1=\"128\" x2=\"129\" y2=\"128\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"75\" x2=\"265\" y2=\"75\" stroke=\"#00cc55\" stroke-width=\"1.5\"/><circle cx=\"10\" cy=\"57\" r=\"3\" fill=\"#e8e000\"/><text x=\"4\" y=\"52\" fill=\"#e8e000\" font-size=\"8\" font-family=\"monospace\">CH1</text><circle cx=\"260\" cy=\"75\" r=\"3\" fill=\"#d040e0\"/><text x=\"249\" y=\"70\" fill=\"#d040e0\" font-size=\"8\" font-family=\"monospace\">CH2</text><text x=\"12\" y=\"70\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vin</text><text x=\"232\" y=\"88\" fill=\"#999\" font-size=\"8\" font-family=\"monospace\">Vout</text></svg>",
           "scope_ch1": "Vin — señal de entrada",
           "scope_ch2": "Vout — derivada de Vin",
-          "scope_notes": "Triangular → cuadrada en salida. Senoidal → cosenidal (desfase +90°). La amplitud de CH2 depende de la frecuencia (más frecuencia = más amplitud).",
+          "scope_notes": "Triangular → cuadrada en salida. Senoidal → cosenoidal (CH2 retrasada −90° respecto a CH1). La amplitud de CH2 depende de la frecuencia (más frecuencia = más amplitud).",
           "key_formulas": [
             "Vout(t) = −RC · dVin/dt",
             "τ = RC = 10kΩ · 0,1µF = 1 ms",
             "H(jω) = −jωRC",
             "|H(jω)| = ωRC (crece con frecuencia)",
-            "Fase = +90° (adelanto)"
+            "Fase = −90° (retraso, por ser inversor)"
           ],
           "measurements": [
             "Con entrada triangular: verificar que la salida es cuadrada",
@@ -178,7 +178,7 @@
             "Montar C (0,1 µF) de Vin al pin(−). R (10 kΩ) de la salida al pin(−). Pin(+) a GND. ±15 V.",
             "FG: triangular, 100 Hz, 1 Vp. CH1 en Vin, CH2 en Vout.",
             "Verificar que la salida es cuadrada (derivada de triangular).",
-            "Cambiar a senoidal: la salida es otra senoidal desfasada +90°.",
+            "Cambiar a senoidal: la salida es otra senoidal desfasada −90°.",
             "Aumentar la frecuencia y observar que la amplitud de CH2 aumenta."
           ],
           "warning": "El diferenciador es inestable a altas frecuencias. En laboratorio se añade una resistencia pequeña (100 Ω) en serie con C para limitar la ganancia en alta frecuencia."

@@ -9,17 +9,19 @@ export function init(containerEl) {
 function _html() {
   return `
 <div class="instr-panel fg-panel">
-  <div class="instr-title">FUNCIÓN GENERADOR</div>
-  <div class="instr-brand">HAMEG HM 8030</div>
+  <div class="instr-head">
+    <div class="instr-title">Generador de funciones</div>
+    <div class="instr-brand">HAMEG HM 8030</div>
+  </div>
 
   <div class="fg-display">
-    <span class="disp-label">FREQ</span>
+    <span class="disp-label">Frecuencia</span>
     <span class="disp-value seg7" id="fg-freq-disp">249</span>
     <span class="disp-unit" id="fg-freq-unit">Hz</span>
   </div>
 
   <div class="fg-row">
-    <label class="ctrl-label">Frecuencia</label>
+    <label class="ctrl-label" for="fg-freq-input">f (Hz)</label>
     <div class="stepper-group">
       <button class="step-btn" data-action="freq-decade-down" title="÷10">«</button>
       <button class="step-btn" data-action="freq-coarse-down" title="-10%">‹</button>
@@ -30,7 +32,7 @@ function _html() {
   </div>
 
   <div class="fg-row">
-    <label class="ctrl-label">Amplitud (Vp)</label>
+    <label class="ctrl-label" for="fg-amp-input">Amplitud (Vp)</label>
     <div class="stepper-group">
       <button class="step-btn" data-action="amp-down">‹</button>
       <input type="number" id="fg-amp-input" class="num-input" min="0.01" max="20" step="0.1" value="1.0">
@@ -39,7 +41,7 @@ function _html() {
   </div>
 
   <div class="fg-row">
-    <label class="ctrl-label">Offset (V)</label>
+    <label class="ctrl-label" for="fg-offset-input">Offset (V)</label>
     <div class="stepper-group">
       <button class="step-btn" data-action="offset-down">‹</button>
       <input type="number" id="fg-offset-input" class="num-input" min="-10" max="10" step="0.1" value="0">
@@ -48,16 +50,16 @@ function _html() {
   </div>
 
   <div class="fg-row">
-    <label class="ctrl-label">Forma de onda</label>
+    <span class="ctrl-label">Onda</span>
     <div class="wave-btns" id="fg-wave-btns">
-      <button class="wave-btn active" data-wave="sine">∿ Seno</button>
-      <button class="wave-btn" data-wave="square">⊓ Cuadra</button>
-      <button class="wave-btn" data-wave="triangle">⋀ Trián</button>
+      <button class="wave-btn active" data-wave="sine">Seno</button>
+      <button class="wave-btn" data-wave="square">Cuadrada</button>
+      <button class="wave-btn" data-wave="triangle">Triangular</button>
     </div>
   </div>
 
   <div class="fg-row">
-    <label class="ctrl-label">Salida</label>
+    <span class="ctrl-label">Salida</span>
     <button class="toggle-btn active" id="fg-enable-btn" data-action="toggle-enable">ON</button>
   </div>
 </div>

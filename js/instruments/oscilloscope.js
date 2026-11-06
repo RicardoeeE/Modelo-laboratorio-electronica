@@ -194,7 +194,7 @@ function _drawTrace(samples, sampleRate, chCfg, timeDiv, trigLevel, divW, divH, 
   // Channel label
   ctx.font = 'bold 11px monospace';
   ctx.fillStyle = chCfg.color;
-  ctx.fillText(chCfg.label ?? '', 4, yCenter - 6);
+  ctx.fillText(chCfg.label ?? '', chCfg.label === 'CH2' ? 34 : 4, yCenter - 6);
 }
 
 function _drawTrigger(level, vdiv, position, divH, w, h) {
@@ -247,9 +247,12 @@ function _drawStatus(w, h, scope) {
 }
 
 function _drawMeasurements(w, h, m) {
-  const x = w - 160;
-  const lineH = 13;
-  let y = 28;
+  const x = w - 150;
+  const lineH = 14;
+  let y = 30;
+
+  ctx.fillStyle = 'rgba(0,12,0,0.72)';
+  ctx.fillRect(x - 8, y - 12, 152, lineH * 4 + 6);
 
   ctx.font = '11px monospace';
   ctx.fillStyle = 'rgba(0,255,100,0.85)';
@@ -262,7 +265,7 @@ function _drawMeasurements(w, h, m) {
   ctx.fillText(`CH2 Vpp: ${m.vpp2.toFixed(3)}V`, x, y); y += lineH;
 
   ctx.fillStyle = 'rgba(255,255,255,0.7)';
-  ctx.fillText(`Phase: ${m.phase.toFixed(1)}°`, x, y);
+  ctx.fillText(`Fase CH2: ${_fmtPhase(m.phase)}`, x, y);
 }
 
 // ── Formatters ───────────────────────────────────────────────────────────────
@@ -278,6 +281,11 @@ function _fmtT(t) {
   if (t >= 1e-3)    return `${(t * 1e3).toFixed(1)}ms`;
   if (t >= 1e-6)    return `${(t * 1e6).toFixed(1)}µs`;
   return `${(t * 1e9).toFixed(1)}ns`;
+}
+
+function _fmtPhase(p) {
+  if (p === null) return '—';
+  return `${p > 0 ? '+' : ''}${p.toFixed(1)}°`;
 }
 
 function _fmtHz(f) {

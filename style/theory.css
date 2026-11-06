@@ -8,7 +8,7 @@
 #theory-sidebar {
   width: 195px;
   flex-shrink: 0;
-  border-right: 1px solid #222;
+  border-right: 1px solid var(--line);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -16,21 +16,18 @@
 
 .theory-sidebar-header {
   padding: 6px 8px 4px;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  font-size: 12px;
+  font-weight: 600;
   color: var(--text-dim);
-  border-bottom: 1px solid #222;
+  border-bottom: 1px solid var(--line);
   flex-shrink: 0;
 }
 
 .theory-cat-header {
   padding: 8px 8px 2px;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-amber);
-  font-weight: bold;
+  font-size: 12px;
+  color: var(--text-dim);
+  font-weight: 600;
 }
 
 .theory-item {
@@ -43,21 +40,21 @@
   margin: 1px 4px;
   transition: background 0.1s;
 }
-.theory-item:hover { background: #1e1e1e; }
+.theory-item:hover { background: var(--bg-raised); }
 .theory-item.active {
-  background: #0a1a2a;
-  border-color: #1a3a5a;
+  background: var(--color-green-soft);
+  border-color: rgba(69,212,131,0.35);
 }
 .theory-item-practica {
-  font-size: 9px;
+  font-size: 10px;
   color: var(--text-dim);
   letter-spacing: 0.05em;
 }
 .theory-item-name {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.3;
 }
-.theory-item.active .theory-item-name { color: var(--color-ch1); }
+.theory-item.active .theory-item-name { color: var(--color-green); }
 .theory-item.active .theory-item-practica { color: var(--color-green); }
 
 /* ── Detail panel ──────────────────────────────────────────────────── */
@@ -80,15 +77,15 @@
 
 .theory-header {
   margin-bottom: 12px;
-  border-bottom: 1px solid #222;
+  border-bottom: 1px solid var(--line);
   padding-bottom: 8px;
 }
 .theory-title {
-  font-size: 17px;
-  font-weight: bold;
-  color: var(--color-amber);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-main);
 }
-.theory-meta { font-size: 11px; color: var(--text-dim); margin-top: 3px; }
+.theory-meta { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
 .theory-practica { color: var(--color-green); font-weight: bold; }
 
 .theory-body {
@@ -104,8 +101,8 @@
 
 /* Schematic */
 .theory-schematic-box {
-  background: #020e02;
-  border: 1px solid #1a3a1a;
+  background: var(--bg-inset);
+  border: 1px solid var(--line);
   border-radius: 6px;
   padding: 8px;
 }
@@ -115,19 +112,18 @@
 .theory-schematic-label,
 .theory-scope-label,
 .theory-section-title {
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  font-size: 12px;
+  font-weight: 600;
   color: var(--text-dim);
   margin-bottom: 6px;
-  border-bottom: 1px solid #222;
+  border-bottom: 1px solid var(--line);
   padding-bottom: 3px;
 }
 
 /* Scope notes */
 .theory-scope-box {
-  background: #080812;
-  border: 1px solid #222;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
   border-radius: 6px;
   padding: 8px;
 }
@@ -136,27 +132,27 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 4px;
-  font-size: 11px;
+  font-size: 12px;
 }
-.probe-text { color: var(--text-main); font-size: 11px; }
+.probe-text { color: var(--text-main); font-size: 12px; }
 .theory-scope-notes {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-dim);
   line-height: 1.5;
   margin-top: 6px;
-  border-top: 1px solid #1a1a1a;
+  border-top: 1px solid var(--line-soft);
   padding-top: 5px;
 }
 
 /* Right column sections */
 .theory-section {
-  background: #111;
-  border: 1px solid #222;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
   border-radius: 6px;
   padding: 8px 10px;
 }
 .theory-formula {
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   color: var(--color-green);
   padding: 2px 0;
@@ -166,19 +162,19 @@
 .theory-step {
   display: flex;
   gap: 8px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-main);
   padding: 3px 0;
-  border-bottom: 1px solid #1a1a1a;
+  border-bottom: 1px solid var(--line-soft);
   line-height: 1.45;
 }
 .theory-measure:last-child, .theory-step:last-child { border-bottom: none; }
 .theory-measure-num,
 .theory-step-num {
-  background: #1a3a1a;
+  background: var(--color-green-soft);
   color: var(--color-green);
   border-radius: 3px;
-  font-size: 9px;
+  font-size: 10px;
   padding: 1px 4px;
   flex-shrink: 0;
   align-self: flex-start;
@@ -192,9 +188,14 @@
   border: 1px solid #442200;
   border-radius: 4px;
   padding: 6px 10px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--color-amber);
   line-height: 1.5;
 }
-.theory-components { font-size: 11px; color: var(--text-main); }
-.theory-signal { font-size: 10px; color: var(--text-dim); margin-top: 3px; }
+.theory-components { font-size: 12px; color: var(--text-main); }
+.theory-signal { font-size: 11px; color: var(--text-dim); margin-top: 3px; }
+
+@media (max-width: 860px) {
+  .theory-body { grid-template-columns: minmax(0, 1fr); }
+  #theory-sidebar { width: 160px; }
+}

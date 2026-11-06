@@ -4,6 +4,8 @@ Simulador web interactivo de laboratorio de electrónica analógica.
 
 **▶ [Probar la demo en el navegador](https://ricardoeee.github.io/Modelo-laboratorio-electronica/)**: no hace falta instalar nada.
 
+![Filtro RC paso bajo: al subir la frecuencia hasta el corte, CH2 baja a 0,707 × CH1 y el desfase llega a −45°](docs/capturas/demo.gif)
+
 ## Equipos simulados
 
 | Equipo | Modelo real |
@@ -39,6 +41,14 @@ python3 -m http.server 8080
 ```
 
 > **No** abrir con `file://` — los ES Modules requieren HTTP.
+
+## Pruebas
+
+```bash
+node --test tests/medidas.test.mjs
+```
+
+Contrastan las medidas del osciloscopio con el cálculo: frecuencia, Vpp y fase de los filtros en su frecuencia de corte, del integrador, del diferenciador y de los amplificadores con op-amp.
 
 ## Tecnología
 

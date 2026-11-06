@@ -185,6 +185,7 @@ function _setMode(mode) {
 
   const workspace = document.getElementById('workspace');
   const theoryPanel = document.getElementById('theory-panel');
+  document.getElementById('main').classList.toggle('theory-mode', mode === 'theory');
 
   if (mode === 'theory') {
     workspace.style.display = 'none';

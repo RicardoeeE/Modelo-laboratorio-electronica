@@ -9,8 +9,10 @@ export function init(containerEl) {
 function _html() {
   return `
 <div class="instr-panel psu-panel">
-  <div class="instr-title">FUENTE DE ALIMENTACIÓN</div>
-  <div class="instr-brand">HAMEG HM 8030-5</div>
+  <div class="instr-head">
+    <div class="instr-title">Fuente de alimentación</div>
+    <div class="instr-brand">HAMEG HM 8030-5</div>
+  </div>
 
   <div class="psu-displays">
     <div class="psu-ch">
@@ -31,7 +33,7 @@ function _html() {
   </div>
 
   <div class="psu-row">
-    <label class="ctrl-label">V+ (0 – 20 V)</label>
+    <label class="ctrl-label" for="psu-vpos-input">V+ (0 a 20 V)</label>
     <div class="stepper-group">
       <button class="step-btn" data-action="vpos-down">‹</button>
       <input type="number" id="psu-vpos-input" class="num-input" min="0" max="20" step="0.5" value="15">
@@ -40,7 +42,7 @@ function _html() {
   </div>
 
   <div class="psu-row">
-    <label class="ctrl-label">V− (−20 – 0 V)</label>
+    <label class="ctrl-label" for="psu-vneg-input">V− (−20 a 0 V)</label>
     <div class="stepper-group">
       <button class="step-btn" data-action="vneg-down">‹</button>
       <input type="number" id="psu-vneg-input" class="num-input" min="-20" max="0" step="0.5" value="-15">

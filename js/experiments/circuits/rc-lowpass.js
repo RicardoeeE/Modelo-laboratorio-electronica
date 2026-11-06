@@ -9,7 +9,7 @@ export function compute(inputSamples, params, psu, sampleRate) {
   const output = new Float32Array(inputSamples.length);
   output[0] = inputSamples[0] * (1 - alpha);
   for (let i = 1; i < inputSamples.length; i++) {
-    output[i] = alpha * output[i - 1] + (1 - alpha) * inputSamples[i];
+    output[i] = alpha * output[i - 1] + (1 - alpha) * 0.5 * (inputSamples[i] + inputSamples[i - 1]);
   }
 
   return { ch1: inputSamples, ch2: output };

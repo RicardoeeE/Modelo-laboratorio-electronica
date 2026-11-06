@@ -129,7 +129,7 @@
       "id": "opamp-integrator",
       "title": "Integrador con Op-Amp",
       "icon": "∫",
-      "description": "Circuito del laboratorio real (ver foto). Vout = −1/(RC)∫Vin dt. Señal senoidal → senoidal con desfase −90°. Cuadrada → triangular.",
+      "description": "Circuito del laboratorio real. Vout = −1/(RC)∫Vin dt. Señal senoidal → senoidal adelantada +90°. Cuadrada → triangular.",
       "defaultFG":  { "freq": 249, "amplitude": 1.0, "waveform": "sine", "offset": 0, "enabled": true },
       "defaultPSU": { "vPos": 15, "vNeg": -15 },
       "defaultParams": { "R": 10000, "C": 1e-7, "Rf": 1000000 },
@@ -142,7 +142,7 @@
       "formula": "Vout = −1/(RC) ∫ Vin dt",
       "steps": [
         { "n": 1, "title": "Montar",            "text": "R=10 kΩ entre FG y pin 2 (−). C=100 nF entre pin 2 y pin 6. Rf=1 MΩ en paralelo con C (estabilidad DC). PSU ±15 V." },
-        { "n": 2, "title": "Señal senoidal",    "text": "FG: 249 Hz senoidal. CH2 debe ser senoidal con desfase ≈ −90° y amplitud ≈ Vin/(ωRC). Réplica exacta del experimento del laboratorio." },
+        { "n": 2, "title": "Señal senoidal",    "text": "FG: 249 Hz senoidal. CH2 debe ser senoidal, adelantada ≈ +90° respecto a CH1, y con amplitud ≈ Vin/(ωRC). Réplica exacta del experimento del laboratorio." },
         { "n": 3, "title": "Señal cuadrada",    "text": "Cambia FG a cuadrada: CH2 debe verse como una señal triangular (la integral de una cuadrada)." },
         { "n": 4, "title": "Variar frecuencia", "text": "Sube la frecuencia: la amplitud de salida cae (∝ 1/f). A muy alta frecuencia el op-amp no puede seguir (BW del LM741 ≈ 1 MHz)." }
       ]
@@ -165,7 +165,7 @@
       "steps": [
         { "n": 1, "title": "Montar",            "text": "C=100 nF en serie con Rs=100 Ω entre FG y pin 2 (−). R=10 kΩ entre pin 2 y pin 6 (salida)." },
         { "n": 2, "title": "Señal triangular",  "text": "FG triangular a 249 Hz: CH2 debe ser aproximadamente cuadrada (derivada de una triangular)." },
-        { "n": 3, "title": "Señal senoidal",    "text": "FG senoidal: CH2 cosenoidal con desfase +90° respecto a CH1." },
+        { "n": 3, "title": "Señal senoidal",    "text": "FG senoidal: CH2 cosenoidal, retrasada ≈ −90° respecto a CH1 (Vout = −RC·dVin/dt)." },
         { "n": 4, "title": "Ruido a alta f",    "text": "Sube la frecuencia: sin Rs el diferenciador amplificaría el ruido hasta saturar. Rs forma un polo que limita la ganancia." }
       ]
     },

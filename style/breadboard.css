@@ -4,8 +4,8 @@
   flex-direction: column;
   gap: 3px;
   padding: 6px;
-  background: #111;
-  border: 1px solid #333;
+  background: #12161a;
+  border: 1px solid var(--line);
   border-radius: var(--radius);
   user-select: none;
   position: relative;
@@ -37,7 +37,7 @@
   text-align: center;
   font-size: 9px;
   font-weight: bold;
-  color: #555;
+  color: var(--text-dim);
   flex-shrink: 0;
 }
 
@@ -58,7 +58,7 @@
   width: 14px;
   text-align: center;
   font-size: 7px;
-  color: #444;
+  color: #6b7680;
   flex-shrink: 0;
 }
 
@@ -66,8 +66,8 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #f0edd8;
-  border: 1px solid #bbb8a0;
+  background: #2b333a;
+  border: 1px solid #3a444d;
   cursor: crosshair;
   flex-shrink: 0;
   position: relative;
@@ -79,31 +79,31 @@
   position: absolute;
   inset: 3px;
   border-radius: 50%;
-  background: #2a2a2a;
+  background: #06080a;
 }
 
 .hole:hover,
 .hole.hole-hover {
-  background: #ffff80;
-  box-shadow: 0 0 4px rgba(255,255,80,0.7);
+  background: var(--color-amber);
+  border-color: var(--color-amber);
 }
 
 .hole.hole-pending {
-  background: #80ff80;
-  box-shadow: 0 0 5px rgba(80,255,80,0.8);
+  background: var(--color-green);
+  border-color: var(--color-green);
 }
 
 .hole.hole-occupied {
-  background: #c0c0a0;
+  background: #5a6670;
 }
 
 .hole.hole-occupied::after {
-  background: #555;
+  background: #1a1f24;
 }
 
 .hole.hole-highlight {
-  background: #ff8080;
-  box-shadow: 0 0 5px rgba(255,80,80,0.8);
+  background: var(--color-red);
+  border-color: var(--color-red);
 }
 
 .bb-rail {
@@ -114,18 +114,18 @@
 }
 
 .bb-rail-top {
-  border-top: 2px solid #cc3333;
-  border-bottom: 2px solid #3333cc;
+  border-top: 2px solid #a8453c;
+  border-bottom: 2px solid #3f62a8;
 }
 
 .bb-rail-bottom {
-  border-top: 2px solid #3333cc;
-  border-bottom: 2px solid #cc3333;
+  border-top: 2px solid #3f62a8;
+  border-bottom: 2px solid #a8453c;
 }
 
 .rail-hole {
-  background: #e8e8e8;
-  border-color: #888;
+  background: #323b43;
+  border-color: #46515b;
 }
 
 #palette-bar {
@@ -133,43 +133,42 @@
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
-  padding: 4px 6px;
-  background: #111;
-  border: 1px solid #333;
+  padding: 6px 8px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
   border-radius: var(--radius);
 }
 
 .palette-label {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-dim);
-  text-transform: uppercase;
 }
 
 .palette-btn {
-  background: #1e1e1e;
-  border: 1px solid #444;
-  border-radius: 4px;
-  padding: 3px 8px;
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0 9px;
+  height: 26px;
   cursor: pointer;
-  font-family: inherit;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-main);
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 5px;
   transition: background 0.12s;
 }
 
-.palette-btn:hover  { background: #282828; }
+.palette-btn:hover  { background: #283038; }
 .palette-btn.active {
   border-color: var(--color-green);
-  background: #1a2a1a;
+  background: var(--color-green-soft);
   color: var(--color-green);
 }
 
 .palette-btn.delete-btn.active {
   border-color: var(--color-red);
-  background: #2a1a1a;
+  background: rgba(255,107,94,0.12);
   color: var(--color-red);
 }
 
@@ -183,15 +182,15 @@
 .palette-divider {
   width: 1px;
   height: 20px;
-  background: #333;
+  background: var(--line);
 }
 
 #detected-circuit {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--color-green);
   padding: 2px 8px;
-  background: #0a1a0a;
-  border: 1px solid #1a3a1a;
-  border-radius: 4px;
+  background: var(--color-green-soft);
+  border: 1px solid rgba(69,212,131,0.35);
+  border-radius: var(--radius-sm);
   margin-left: auto;
 }

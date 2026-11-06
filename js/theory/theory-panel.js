@@ -9,7 +9,10 @@ export async function init(containerEl) {
   _buildShell();
 }
 
-export function show() { _containerEl.style.display = 'flex'; }
+export function show() {
+  _containerEl.style.display = 'flex';
+  if (!_selectedId) _containerEl.querySelector('.theory-item')?.click();
+}
 export function hide() { _containerEl.style.display = 'none'; }
 
 function _buildShell() {

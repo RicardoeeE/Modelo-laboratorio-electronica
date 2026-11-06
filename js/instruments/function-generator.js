@@ -80,14 +80,17 @@ function _bind(el) {
 
   el.querySelector('#fg-freq-input').addEventListener('change', e => {
     const v = parseFloat(e.target.value);
-    if (v > 0) { setFG({ freq: v }); _refresh(el); }
+    if (v > 0) setFG({ freq: Math.max(0.1, Math.min(8e6, v)) });
+    _refresh(el);
   });
   el.querySelector('#fg-amp-input').addEventListener('change', e => {
     const v = parseFloat(e.target.value);
-    if (v > 0) { setFG({ amplitude: v }); _refresh(el); }
+    if (v > 0) setFG({ amplitude: Math.max(0.01, Math.min(20, v)) });
+    _refresh(el);
   });
   el.querySelector('#fg-offset-input').addEventListener('change', e => {
-    setFG({ offset: parseFloat(e.target.value) || 0 });
+    setFG({ offset: Math.max(-10, Math.min(10, parseFloat(e.target.value) || 0)) });
+    _refresh(el);
   });
 }
 

@@ -1,8 +1,8 @@
 import { getState, setBreadboard } from '../state.js';
-import { markHoleOccupied, getNodeForHole } from './breadboard.js';
+import { parseValue, formatValue } from './netlist-builder.js';
+import { montajeOf } from './montajes.js';
 
-let _containerEl = null;
-let _svgEl       = null;
+const SVG_NS = 'http://www.w3.org/2000/svg';
 
 const COMPONENT_COLORS = {
   R:      '#e8a000',
@@ -13,85 +13,181 @@ const COMPONENT_COLORS = {
   OPAMP:  '#44ffff',
   BJT:    '#ffaa44',
   WIRE:   '#aaaaaa',
+  GEN:    '#e8e000',
+  CH2:    '#d040e0',
 };
+
+// Una entrada por pata, en el orden en que se pide con cada clic.
+const PINS = {
+  R: ['una pata', 'la otra pata'],
+  C: ['una pata', 'la otra pata'],
+  L: ['una pata', 'la otra pata'],
+  WIRE: ['un extremo', 'el otro extremo'],
+  D: ['el ánodo', 'el cátodo'],
+  LED: ['el ánodo', 'el cátodo'],
+  OPAMP: ['el pin −', 'el pin +', 'la salida'],
+  BJT: ['la base', 'el colector', 'el emisor'],
+  GEN: ['la salida del generador'],
+  CH2: ['la punta de la sonda'],
+};
+const PIN_MARKS = { OPAMP: ['−', '+', 'S'], BJT: ['B', 'C', 'E'], D: ['A', 'K'], LED: ['A', 'K'] };
+
+const DEFAULT_VALUES = { R: 1000, C: 1e-7, L: 0.01, D: 0.7, LED: 2.1 };
+const UNITS = { R: 'Ω', C: 'F', L: 'H', D: 'V', LED: 'V' };
+const LABELS = { R: 'R', C: 'C', L: 'L', D: 'D', LED: 'LED', OPAMP: 'U', BJT: 'Q', WIRE: 'W' };
+
+let _containerEl = null;
+let _svgEl = null;
+let _idCounter = 0;
 
 export function init(containerEl, svgEl) {
   _containerEl = containerEl;
-  _svgEl       = svgEl;
+  _svgEl = svgEl;
 
-  containerEl.addEventListener('click', _onHoleClick);
-  containerEl.addEventListener('mouseover', _onHoleHover);
-  containerEl.addEventListener('mouseout',  _onHoleOut);
+  containerEl.addEventListener('click', _onClick);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && getState().breadboard.pending.length) _cancelPending();
+  });
+  document.getElementById('comp-value').addEventListener('change', _onValueChange);
+  window.addEventListener('resize', renderComponents);
 
   renderComponents();
 }
 
-function _onHoleClick(e) {
+function _inFreeform() {
+  return getState().circuit.mode === 'freeform';
+}
+
+function _onClick(e) {
+  if (!_inFreeform()) return;
+
+  const body = e.target.closest?.('[data-comp-id]');
+  if (body) {
+    const tool = getState().breadboard.selectedTool;
+    if (tool === 'delete') _delete(body.dataset.compId);
+    if (tool === 'select') _select(body.dataset.compId);
+    return;
+  }
+
   const hole = e.target.closest('.hole');
   if (!hole) return;
 
   const holeId = hole.dataset.holeId;
   const s = getState().breadboard;
+  const owner = s.components.find(c => c.pins.includes(holeId));
 
   if (s.selectedTool === 'delete') {
-    _deleteAtHole(holeId);
+    if (owner) _delete(owner.id);
     return;
   }
-
   if (s.selectedTool === 'select') {
+    _select(owner?.id ?? null);
     return;
   }
 
-  if (!s.pendingFirst) {
-    setBreadboard({ pendingFirst: holeId });
-    hole.classList.add('hole-pending');
-  } else {
-    const h1 = s.pendingFirst;
-    const h2 = holeId;
-
-    if (h1 !== h2) {
-      _placeComponent(s.selectedTool, h1, h2);
-    }
-
-    document.querySelectorAll('.hole-pending').forEach(el => el.classList.remove('hole-pending'));
-    setBreadboard({ pendingFirst: null });
+  if (s.pending.includes(holeId)) {
+    _cancelPending();
+    return;
   }
-}
+  if (owner) {
+    setHint(`Ese agujero ya lo usa ${owner.label}. Usa otro de la misma columna: conducen entre sí.`);
+    return;
+  }
 
-function _onHoleHover(e) {
-  const hole = e.target.closest('.hole');
-  if (hole) hole.classList.add('hole-hover');
-}
-
-function _onHoleOut(e) {
-  const hole = e.target.closest('.hole');
-  if (hole) hole.classList.remove('hole-hover');
-}
-
-function _placeComponent(type, h1, h2) {
-  const s = getState().breadboard;
-  const newComp = {
-    id:       `comp_${Date.now()}`,
-    type,
-    terminal1: h1,
-    terminal2: h2,
-    value:    _defaultValue(type),
-    label:    _defaultLabel(type, s.components.length + 1),
-  };
-
-  const comps = [...s.components, newComp];
-  setBreadboard({ components: comps });
-  markHoleOccupied(h1, true);
-  markHoleOccupied(h2, true);
+  const pending = [...s.pending, holeId];
+  if (pending.length === PINS[s.selectedTool].length) {
+    _place(s.selectedTool, pending);
+    setBreadboard({ pending: [] });
+    setHint(promptFor(s.selectedTool, 0));
+  } else {
+    setBreadboard({ pending });
+    setHint(promptFor(s.selectedTool, pending.length));
+  }
   renderComponents();
 }
 
-function _deleteAtHole(holeId) {
-  const s = getState().breadboard;
-  const comps = s.components.filter(c => c.terminal1 !== holeId && c.terminal2 !== holeId);
-  setBreadboard({ components: comps });
-  markHoleOccupied(holeId, false);
+function _cancelPending() {
+  const { selectedTool } = getState().breadboard;
+  setBreadboard({ pending: [] });
+  setHint(promptFor(selectedTool, 0));
   renderComponents();
+}
+
+export function promptFor(tool, pinIndex) {
+  if (tool === 'select') return 'Clic en un componente para cambiar su valor.';
+  if (tool === 'delete') return 'Clic en un componente para quitarlo.';
+  const name = document.querySelector(`#palette-bar [data-tool="${tool}"]`)?.textContent.trim() ?? tool;
+  return `${name}: clic en el agujero de ${PINS[tool][pinIndex]}. Esc o repetir el clic cancela.`;
+}
+
+export function setHint(text) {
+  const el = document.getElementById('bb-hint');
+  if (el) el.textContent = text;
+}
+
+function _place(type, pins) {
+  const s = getState().breadboard;
+  const prefix = LABELS[type];
+  const taken = s.components.filter(c => c.type === type)
+    .map(c => parseInt(c.label.slice(prefix?.length ?? 0), 10) || 0);
+  const label = prefix ? `${prefix}${Math.max(0, ...taken) + 1}` : type === 'GEN' ? 'Gen' : 'CH2';
+  const comp = { id: `comp_${++_idCounter}`, type, pins, value: DEFAULT_VALUES[type] ?? null, label };
+  setBreadboard({ components: [...s.components, comp] });
+}
+
+function _delete(id) {
+  const s = getState().breadboard;
+  const selectedId = s.selectedId === id ? null : s.selectedId;
+  setBreadboard({ components: s.components.filter(c => c.id !== id), selectedId });
+  _refreshEditor();
+  renderComponents();
+}
+
+function _select(id) {
+  setBreadboard({ selectedId: id });
+  _refreshEditor();
+  renderComponents();
+}
+
+function _refreshEditor() {
+  const { components, selectedId } = getState().breadboard;
+  const comp = components.find(c => c.id === selectedId);
+  const editor = document.getElementById('comp-editor');
+  const editable = comp && UNITS[comp.type];
+  editor.hidden = !editable;
+  if (!editable) return;
+  document.getElementById('comp-label').textContent = `${comp.label} =`;
+  const input = document.getElementById('comp-value');
+  input.value = formatValue(comp.value, UNITS[comp.type]);
+  input.classList.remove('invalid');
+}
+
+function _onValueChange(e) {
+  const { components, selectedId } = getState().breadboard;
+  const value = parseValue(e.target.value);
+  if (value === null) {
+    e.target.classList.add('invalid');
+    setHint('No entiendo ese valor. Prueba 10k, 100n, 4,7u o 1M.');
+    return;
+  }
+  setBreadboard({ components: components.map(c => (c.id === selectedId ? { ...c, value } : c)) });
+  _refreshEditor();
+  renderComponents();
+}
+
+// Reinicia lo que depende de la herramienta elegida en la paleta.
+export function onToolChange() {
+  const { selectedTool } = getState().breadboard;
+  setBreadboard({ pending: [], selectedId: null });
+  _refreshEditor();
+  setHint(promptFor(selectedTool, 0));
+  renderComponents();
+}
+
+function _visibleComponents() {
+  const { circuit, breadboard } = getState();
+  if (circuit.mode === 'experiment') return montajeOf(circuit.activeExperiment, circuit.params);
+  return breadboard.components;
 }
 
 export function renderComponents() {
@@ -99,93 +195,110 @@ export function renderComponents() {
   _svgEl.innerHTML = '';
 
   const rect = _containerEl.getBoundingClientRect();
-  _svgEl.setAttribute('width',  rect.width);
+  if (rect.width === 0) return;
+  _svgEl.setAttribute('width', rect.width);
   _svgEl.setAttribute('height', rect.height);
 
-  const s = getState().breadboard;
+  const { selectedTool, selectedId, pending } = getState().breadboard;
+  _svgEl.classList.toggle('interactive', _inFreeform() && ['select', 'delete'].includes(selectedTool));
 
-  s.components.forEach(comp => {
-    const el1 = document.querySelector(`[data-hole-id="${comp.terminal1}"]`);
-    const el2 = document.querySelector(`[data-hole-id="${comp.terminal2}"]`);
-    if (!el1 || !el2) return;
+  const comps = _visibleComponents();
+  const center = hole => {
+    const r = document.querySelector(`[data-hole-id="${hole}"]`)?.getBoundingClientRect();
+    return r && { x: r.left - rect.left + r.width / 2, y: r.top - rect.top + r.height / 2 };
+  };
 
-    const r1 = el1.getBoundingClientRect();
-    const r2 = el2.getBoundingClientRect();
+  document.querySelectorAll('.hole-occupied, .hole-pending').forEach(el => {
+    el.classList.remove('hole-occupied', 'hole-pending');
+  });
+  comps.flatMap(c => c.pins).forEach(h => {
+    document.querySelector(`[data-hole-id="${h}"]`)?.classList.add('hole-occupied');
+  });
+  if (_inFreeform()) {
+    pending.forEach(h => document.querySelector(`[data-hole-id="${h}"]`)?.classList.add('hole-pending'));
+  }
 
-    const x1 = r1.left - rect.left + r1.width  / 2;
-    const y1 = r1.top  - rect.top  + r1.height / 2;
-    const x2 = r2.left - rect.left + r2.width  / 2;
-    const y2 = r2.top  - rect.top  + r2.height / 2;
-
+  comps.forEach(comp => {
+    const points = comp.pins.map(center);
+    if (points.some(p => !p)) return;
+    const g = _el('g', { 'data-comp-id': comp.id, class: comp.id === selectedId ? 'comp selected' : 'comp' }, _svgEl);
     const color = COMPONENT_COLORS[comp.type] ?? '#888';
-    const mx = (x1 + x2) / 2;
-    const my = (y1 + y2) / 2;
-
-    if (comp.type === 'WIRE') {
-      _svgLine(_svgEl, x1, y1, x2, y2, color, 2);
-    } else {
-      const dx = x2 - x1, dy = y2 - y1;
-      const len = Math.sqrt(dx * dx + dy * dy);
-      if (len < 2) return;
-      const ux = dx / len, uy = dy / len;
-
-      const bodyLen = Math.min(len * 0.5, 20);
-      const bx1 = mx - ux * bodyLen / 2;
-      const by1 = my - uy * bodyLen / 2;
-      const bx2 = mx + ux * bodyLen / 2;
-      const by2 = my + uy * bodyLen / 2;
-
-      _svgLine(_svgEl, x1, y1, bx1, by1, color, 1.5);
-      _svgLine(_svgEl, bx2, by2, x2, y2, color, 1.5);
-
-      const g = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      const hw = bodyLen / 2, hh = 5;
-      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-      g.setAttribute('x', mx - hw);
-      g.setAttribute('y', my - hh);
-      g.setAttribute('width', bodyLen);
-      g.setAttribute('height', hh * 2);
-      g.setAttribute('rx', comp.type === 'C' ? 0 : 2);
-      g.setAttribute('fill',   color);
-      g.setAttribute('stroke', '#111');
-      g.setAttribute('stroke-width', '1');
-      g.setAttribute('transform', `rotate(${angle}, ${mx}, ${my})`);
-      _svgEl.appendChild(g);
-
-      const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      t.setAttribute('x', mx);
-      t.setAttribute('y', my - 8);
-      t.setAttribute('text-anchor', 'middle');
-      t.setAttribute('font-size', '9');
-      t.setAttribute('fill', '#eee');
-      t.setAttribute('font-family', 'monospace');
-      t.textContent = `${comp.label}`;
-      _svgEl.appendChild(t);
-    }
+    if (comp.pins.length === 1) _drawProbe(g, points[0], comp, color);
+    else if (comp.pins.length === 3) _drawThreePin(g, points, comp, color);
+    else if (comp.type === 'WIRE') _drawWire(g, points, color);
+    else _drawTwoPin(g, points, comp, color);
   });
 }
 
-function _svgLine(svg, x1, y1, x2, y2, color, width) {
-  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-  line.setAttribute('x1', x1); line.setAttribute('y1', y1);
-  line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-  line.setAttribute('stroke', color);
-  line.setAttribute('stroke-width', width);
-  svg.appendChild(line);
+function _el(name, attrs, parent) {
+  const el = document.createElementNS(SVG_NS, name);
+  Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+  parent?.appendChild(el);
+  return el;
 }
 
-function _defaultValue(type) {
-  const map = { R: 1000, C: 1e-7, L: 1e-3, D: 0.7, LED: 2.1, OPAMP: null, BJT: null, WIRE: null };
-  return map[type] ?? null;
+function _line(parent, a, b, color, width) {
+  return _el('line', { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: color, 'stroke-width': width }, parent);
 }
 
-function _defaultLabel(type, n) {
-  const map = { R: 'R', C: 'C', L: 'L', D: 'D', LED: 'LED', OPAMP: 'U', BJT: 'Q', WIRE: 'W' };
-  return `${map[type] ?? type}${n}`;
+function _text(parent, x, y, content, anchor = 'middle', fill = '#eee') {
+  const t = _el('text', {
+    x, y, 'text-anchor': anchor, 'font-size': 9, fill, 'font-family': 'monospace', stroke: '#0a0d10',
+    'stroke-width': 2.5, 'paint-order': 'stroke',
+  }, parent);
+  t.textContent = content;
 }
 
-export function setValueForComponent(compId, value) {
-  const s = getState().breadboard;
-  const comps = s.components.map(c => c.id === compId ? { ...c, value } : c);
-  setBreadboard({ components: comps });
+function _drawWire(g, [a, b], color) {
+  _line(g, a, b, color, 2);
+  _line(g, a, b, 'transparent', 8); // para poder hacer clic en un cable fino
+}
+
+function _drawProbe(g, p, comp, color) {
+  _el('circle', { cx: p.x, cy: p.y, r: 6, fill: 'none', stroke: color, 'stroke-width': 2 }, g);
+  _el('circle', { cx: p.x, cy: p.y, r: 2.5, fill: color }, g);
+  _text(g, p.x, p.y - 9, comp.label, 'middle', color);
+}
+
+function _drawTwoPin(g, [a, b], comp, color) {
+  const dx = b.x - a.x, dy = b.y - a.y;
+  const len = Math.hypot(dx, dy);
+  if (len < 2) return;
+  const ux = dx / len, uy = dy / len;
+  const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+  const bodyLen = Math.min(len * 0.6, 22);
+  const p1 = { x: mx - ux * bodyLen / 2, y: my - uy * bodyLen / 2 };
+  const p2 = { x: mx + ux * bodyLen / 2, y: my + uy * bodyLen / 2 };
+
+  _line(g, a, p1, color, 1.5);
+  _line(g, p2, b, color, 1.5);
+  _el('rect', {
+    x: mx - bodyLen / 2, y: my - 5, width: bodyLen, height: 10, rx: comp.type === 'C' ? 0 : 2,
+    fill: color, stroke: '#111', 'stroke-width': 1,
+    transform: `rotate(${Math.atan2(dy, dx) * 180 / Math.PI}, ${mx}, ${my})`,
+  }, g);
+  if (PIN_MARKS[comp.type]) {
+    // Banda del catodo, como en el diodo real.
+    _line(g, { x: p2.x - uy * 5 - ux * 3, y: p2.y + ux * 5 - uy * 3 }, { x: p2.x + uy * 5 - ux * 3, y: p2.y - ux * 5 - uy * 3 }, '#111', 2.5);
+  }
+  const unit = UNITS[comp.type];
+  const text = unit && comp.value && !PIN_MARKS[comp.type] ? `${comp.label} ${formatValue(comp.value, unit)}` : comp.label;
+  _text(g, mx, my - 8, text);
+}
+
+function _drawThreePin(g, points, comp, color) {
+  const cx = points.reduce((s, p) => s + p.x, 0) / 3;
+  const cy = points.reduce((s, p) => s + p.y, 0) / 3;
+  const marks = PIN_MARKS[comp.type];
+  points.forEach((p, i) => {
+    _line(g, p, { x: cx, y: cy }, color, 1.5);
+    _text(g, p.x + 8, p.y - 6, marks[i], 'start', color);
+  });
+  const s = 11;
+  const shape = comp.type === 'OPAMP'
+    ? _el('polygon', { points: `${cx - s},${cy - s} ${cx + s},${cy} ${cx - s},${cy + s}` }, g)
+    : _el('circle', { cx, cy, r: s - 1 }, g);
+  shape.setAttribute('fill', color);
+  shape.setAttribute('stroke', '#111');
+  _text(g, cx, cy - s - 3, comp.label);
 }

@@ -30,10 +30,9 @@ const _state = {
   },
   breadboard: {
     components: [],
-    connections: [],
     selectedTool: 'select',
-    pendingFirst: null,
-    detectedCircuit: null
+    pending: [],
+    selectedId: null
   }
 };
 
@@ -88,9 +87,10 @@ export function setScopeMeasurements(patch) {
 
 export function setCircuit(patch) {
   if (patch.params !== undefined) {
-    Object.assign(_state.circuit.params, patch.params);
-    const rest = { ...patch };
-    delete rest.params;
+    // replaceParams: otro circuito, para que no arrastre valores del anterior.
+    const { params, replaceParams, ...rest } = patch;
+    if (replaceParams) _state.circuit.params = { ...params };
+    else Object.assign(_state.circuit.params, params);
     Object.assign(_state.circuit, rest);
   } else {
     Object.assign(_state.circuit, patch);

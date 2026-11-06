@@ -4,13 +4,16 @@ import * as Scope      from './instruments/oscilloscope.js';
 import * as FG         from './instruments/function-generator.js';
 import * as PSU        from './instruments/power-supply.js';
 import { buildGrid }   from './breadboard/breadboard.js';
-import { init as initPlacer, renderComponents } from './breadboard/component-placer.js';
+import { init as initPlacer, renderComponents, onToolChange, setHint } from './breadboard/component-placer.js';
 import { buildNetlist } from './breadboard/netlist-builder.js';
-import { init as initExperiments, loadExperiment, getExperiments } from './experiments/experiment-manager.js';
+import {
+  init as initExperiments, loadExperiment, getExperiments, renderFreeformHelp, circuitTitle,
+} from './experiments/experiment-manager.js';
+import { autoscale } from './instruments/autoscale.js';
+import { VDIV_STEPS } from './engine/measurements.js';
 import { init as initTheory, show as showTheory, hide as hideTheory } from './theory/theory-panel.js';
 
 // ── V/div sequence (standard scope steps) ──────────────────────────────────────────
-const VDIV_STEPS = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20];
 const TDIV_STEPS = [1e-6, 2e-6, 5e-6, 1e-5, 2e-5, 5e-5, 1e-4, 2e-4, 5e-4,
                     1e-3, 2e-3, 5e-3, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1];
 
@@ -21,6 +24,8 @@ function _nearest(arr, val) { return arr.reduce((a, b) => Math.abs(b - val) < Ma
 // ── Recompute and render ──────────────────────────────────────────────────────
 let _pending = false;
 let _lastExperimentId = null;
+let _mode = 'experiment';
+let _detectedId = null;
 
 function recompute() {
   if (_pending) return;
@@ -51,8 +56,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Experiments
   await initExperiments(
     document.getElementById('sidebar-list'),
-    document.getElementById('guide-panel')
+    document.getElementById('guide-panel'),
+    () => _showMode('experiment')
   );
+  _showMode('experiment');
 
   await initTheory(document.getElementById('theory-panel'));
 
@@ -69,13 +76,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Clear board
   document.getElementById('clear-board').addEventListener('click', () => {
-    setBreadboard({ components: [], connections: [], pendingFirst: null });
-    document.querySelectorAll('.hole-occupied, .hole-pending').forEach(el => {
-      el.classList.remove('hole-occupied', 'hole-pending');
-    });
-    renderComponents();
-    document.getElementById('detected-circuit').style.display = 'none';
-    if (getState().circuit.mode === 'freeform') recompute();
+    setBreadboard({ components: [], pending: [], selectedId: null });
+    onToolChange();
   });
 
   // Subscribe to state changes
@@ -84,6 +86,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   on('change:psu',      recompute);
   on('change:psu',      () => PSU.refreshUI(document.getElementById('psu-container')));
   on('change:circuit',  recompute);
+  on('change:circuit',  renderComponents);
   on('change:breadboard', _onBreadboardChange);
   on('change:scope', () => { _updateScopeControlsUI(); if (!getState().scope.running) Scope.forceRender(); });
 
@@ -111,8 +114,8 @@ function _bindScopeControls() {
   document.getElementById('ch2-vdiv-up').addEventListener('click',   () => { setScopeCh2({ vdiv: stepUp(VDIV_STEPS, getState().scope.ch2.vdiv) });   _updateScopeControlsUI(); });
   document.getElementById('ch2-vdiv-down').addEventListener('click', () => { setScopeCh2({ vdiv: stepDown(VDIV_STEPS, getState().scope.ch2.vdiv) }); _updateScopeControlsUI(); });
 
-  document.getElementById('tdiv-up').addEventListener('click',   () => { setScope({ timeDiv: stepUp(TDIV_STEPS, getState().scope.timeDiv) });   _updateScopeControlsUI(); });
-  document.getElementById('tdiv-down').addEventListener('click', () => { setScope({ timeDiv: stepDown(TDIV_STEPS, getState().scope.timeDiv) }); _updateScopeControlsUI(); });
+  document.getElementById('tdiv-up').addEventListener('click',   () => { setScope({ timeDiv: stepUp(TDIV_STEPS, getState().scope.timeDiv) });   recompute(); });
+  document.getElementById('tdiv-down').addEventListener('click', () => { setScope({ timeDiv: stepDown(TDIV_STEPS, getState().scope.timeDiv) }); recompute(); });
 
   document.getElementById('ch1-pos-up').addEventListener('click',   () => { setScopeCh1({ position: getState().scope.ch1.position + 0.5 }); });
   document.getElementById('ch1-pos-down').addEventListener('click', () => { setScopeCh1({ position: getState().scope.ch1.position - 0.5 }); });
@@ -148,61 +151,81 @@ function _bindPalette() {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#palette-bar [data-tool]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      setBreadboard({ selectedTool: btn.dataset.tool, pendingFirst: null });
-      document.querySelectorAll('.hole-pending').forEach(el => el.classList.remove('hole-pending'));
+      setBreadboard({ selectedTool: btn.dataset.tool });
+      onToolChange();
     });
   });
 }
 
 // ── Breadboard change → detect circuit ──────────────────────────────────────────
 function _onBreadboardChange() {
-  const { components } = getState().breadboard;
-
   if (getState().circuit.mode !== 'freeform') return;
 
-  const desc = buildNetlist(components);
+  const result = buildNetlist(getState().breadboard.components);
   const badge = document.getElementById('detected-circuit');
+  const previous = _detectedId;
+  _detectedId = result.id;
 
-  if (desc) {
-    badge.textContent = `Circuito: ${desc.id}`;
-    badge.style.display = 'block';
-    setCircuit({ activeExperiment: desc.id, params: desc.params });
+  badge.hidden = !result.id && !result.reason;
+  badge.classList.toggle('unknown', !result.id);
+  badge.textContent = result.id
+    ? `${circuitTitle(result.id)}${result.note ? ` · ${result.note}` : ''}`
+    : result.reason;
+
+  if (result.id) {
+    setCircuit({ activeExperiment: result.id, params: result.params, replaceParams: true });
+    if (result.id !== previous) autoscale();
   } else {
-    badge.style.display = components.length > 0 ? 'block' : 'none';
-    badge.textContent = components.length > 0 ? 'Sin circuito reconocido' : '—';
-    if (components.length === 0) setCircuit({ activeExperiment: null });
+    setCircuit({ activeExperiment: null });
   }
-
   renderComponents();
-  recompute();
 }
 
 // ── Mode switch ──────────────────────────────────────────────────────────────────
-function _setMode(mode) {
+function _showMode(mode) {
+  _mode = mode;
   document.getElementById('btn-mode-experiment').classList.toggle('active', mode === 'experiment');
   document.getElementById('btn-mode-freeform').classList.toggle('active',   mode === 'freeform');
   document.getElementById('btn-mode-theory').classList.toggle('active',     mode === 'theory');
 
-  const workspace = document.getElementById('workspace');
-  const theoryPanel = document.getElementById('theory-panel');
-  document.getElementById('main').classList.toggle('theory-mode', mode === 'theory');
+  const main = document.getElementById('main');
+  main.classList.toggle('theory-mode',     mode === 'theory');
+  main.classList.toggle('freeform-mode',   mode === 'freeform');
+  main.classList.toggle('experiment-mode', mode === 'experiment');
+  document.getElementById('workspace').style.display = mode === 'theory' ? 'none' : '';
+
+  if (mode === 'experiment') {
+    document.getElementById('detected-circuit').hidden = true;
+    setHint('Montaje de referencia de este experimento. Para montarlo tú, abre Protoboard libre.');
+  }
+}
+
+function _setMode(mode) {
+  const previous = _mode;
+  if (mode === previous) return;
+  _showMode(mode);
 
   if (mode === 'theory') {
-    workspace.style.display = 'none';
     showTheory();
-  } else {
-    workspace.style.display = '';
-    hideTheory();
-    if (mode === 'freeform') {
-      _lastExperimentId = getState().circuit.activeExperiment;
-      setCircuit({ mode, activeExperiment: null });
-      recompute();
-    } else {
-      setCircuit({ mode });
-      const restoreId = _lastExperimentId ?? getExperiments()[0]?.id;
-      if (restoreId) loadExperiment(restoreId);
-    }
+    return;
   }
+  hideTheory();
+
+  if (mode === 'freeform') {
+    if (getState().circuit.mode === 'experiment') _lastExperimentId = getState().circuit.activeExperiment;
+    _detectedId = null;
+    setCircuit({ mode, activeExperiment: null });
+    renderFreeformHelp();
+    onToolChange();
+    _onBreadboardChange();
+  } else if (previous === 'theory' && getState().circuit.mode === 'experiment') {
+    // Se vuelve de leer la teoria: el experimento y sus ajustes siguen como estaban.
+    renderComponents();
+  } else {
+    loadExperiment(_lastExperimentId ?? getExperiments()[0]?.id);
+    _showMode('experiment');
+  }
+  recompute();
 }
 
 // ── Formatters ───────────────────────────────────────────────────────────────────

@@ -1,12 +1,15 @@
 import { getState, setCircuit, setFG, setPSU, setScope } from '../state.js';
+import { autoscale } from '../instruments/autoscale.js';
 
 let _experiments = [];
 let _sidebarEl   = null;
 let _guideEl     = null;
+let _onSelect    = () => {};
 
-export async function init(sidebarEl, guideEl) {
+export async function init(sidebarEl, guideEl, onSelect) {
   _sidebarEl = sidebarEl;
   _guideEl   = guideEl;
+  _onSelect  = onSelect ?? _onSelect;
 
   const resp = await fetch('./data/experiments.json');
   const data = await resp.json();
@@ -29,7 +32,8 @@ export function loadExperiment(id) {
 
   setCircuit({
     activeExperiment: exp.id,
-    params: { ...exp.defaultParams },
+    params: exp.defaultParams,
+    replaceParams: true,
     mode: 'experiment',
     currentStep: 0,
   });
@@ -37,6 +41,7 @@ export function loadExperiment(id) {
   const freq = exp.defaultFG.freq;
   const timeDiv = _autoTimeDiv(freq);
   setScope({ timeDiv });
+  autoscale();
 
   _renderList();
   _renderGuide(exp);
@@ -71,7 +76,10 @@ function _renderList() {
   }).join('');
 
   _sidebarEl.querySelectorAll('[data-id]').forEach(el => {
-    el.addEventListener('click', () => loadExperiment(el.dataset.id));
+    el.addEventListener('click', () => {
+      loadExperiment(el.dataset.id);
+      _onSelect();
+    });
   });
 }
 
@@ -161,14 +169,34 @@ function _renderParams(exp) {
       const scale = parseFloat(inp.dataset.scale);
       const val   = parseFloat(inp.value);
       if (!isNaN(val)) {
-        setCircuit({ params: { [key]: val * scale } });
+        // El limite evita valores sin sentido físico (R negativa hace diverger el filtro).
+        const limited = Math.max(parseFloat(inp.min), Math.min(parseFloat(inp.max), val));
+        setCircuit({ params: { [key]: limited * scale } });
         _renderGuide(exp);
       }
     });
   });
 }
 
-export function onCircuitChange() {
-  const exp = _experiments.find(e => e.id === getState().circuit.activeExperiment);
-  if (exp) _renderGuide(exp);
+export function renderFreeformHelp() {
+  _renderList();
+  if (!_guideEl) return;
+  _guideEl.innerHTML = `
+    <div class="guide-header">
+      <div class="guide-title">Protoboard libre</div>
+      <div class="guide-formula">Monta el circuito y mide</div>
+    </div>
+    <ol class="freeform-steps">
+      <li><b>Gen</b>: coloca la salida del generador. Ahí mide CH1.</li>
+      <li><b>Componentes</b>: elige uno y haz un clic por pata. Cada columna A–E conduce, y cada columna F–J también, pero no entre ellas.</li>
+      <li><b>Carriles</b>: el de abajo es GND y el de arriba, V+ de la fuente. <b>Cable</b> une dos nodos.</li>
+      <li><b>CH2</b>: coloca la sonda en la salida. Si el montaje es correcto, verás la señal.</li>
+      <li><b>Selec.</b>: clic en un componente para cambiar su valor (10k, 100n, 4,7u).</li>
+    </ol>
+    <div class="guide-desc">Reconoce los 11 circuitos de la lista. No es un resolvedor general: otro montaje no da señal en CH2. El op-amp y el transistor toman la alimentación de la fuente.</div>
+  `;
+}
+
+export function circuitTitle(id) {
+  return _experiments.find(e => e.id === id)?.title ?? id;
 }

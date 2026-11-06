@@ -335,6 +335,12 @@ button { font-family: inherit; }
   #scope-panel { grid-column: 1 / -1; grid-row: 1; }
   #scope-panel .scope-canvas-wrap { height: 300px; flex: none; }
   #breadboard-area { overflow: visible; }
+
+  /* Protoboard libre en pantallas estrechas: primero la placa, despues los instrumentos. */
+  #main.freeform-mode #sidebar-list,
+  #main.freeform-mode .sidebar-header { display: none; }
+  #main.freeform-mode #workspace { display: flex; flex-direction: column; }
+  #main.freeform-mode #breadboard-area { order: -1; }
 }
 
 @media (max-width: 640px) {

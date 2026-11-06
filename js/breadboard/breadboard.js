@@ -1,17 +1,14 @@
+import { nodeOf } from './netlist-builder.js';
+
 const COLS = 63;
 const ROWS_TOP = ['A','B','C','D','E'];
 const ROWS_BOT = ['F','G','H','I','J'];
 
-let _nodeMap = {};
-
 export function buildGrid(containerEl) {
-  containerEl.innerHTML = '';
-  _nodeMap = {};
-
   const wrap = document.createElement('div');
   wrap.className = 'bb-wrap';
 
-  wrap.appendChild(_makeRail('top', COLS));
+  wrap.appendChild(_makeRail('top', 'V+', COLS));
 
   const topGrid = document.createElement('div');
   topGrid.className = 'bb-grid';
@@ -28,20 +25,26 @@ export function buildGrid(containerEl) {
   ROWS_BOT.forEach(row => botGrid.appendChild(_makeRow(row, COLS)));
   wrap.appendChild(botGrid);
 
-  wrap.appendChild(_makeRail('bottom', COLS));
+  wrap.appendChild(_makeRail('bottom', 'GND', COLS));
 
-  containerEl.appendChild(wrap);
+  // Delante del SVG de los componentes: vaciar el contenedor se lo llevaria por delante.
+  containerEl.insertBefore(wrap, containerEl.firstChild);
 }
 
-function _makeRail(side, cols) {
+function _makeRail(side, name, cols) {
   const rail = document.createElement('div');
   rail.className = `bb-rail bb-rail-${side}`;
+
+  const label = document.createElement('span');
+  label.className = 'bb-rail-label';
+  label.textContent = name;
+  rail.appendChild(label);
 
   for (let c = 1; c <= cols; c++) {
     const h = document.createElement('div');
     h.className = 'hole rail-hole';
     h.dataset.holeId = `PWR_${side.toUpperCase()}_${c}`;
-    h.dataset.node   = `PWR_${side.toUpperCase()}_${c > cols / 2 ? 'B' : 'A'}`;
+    h.title = name;
     rail.appendChild(h);
   }
   return rail;
@@ -59,49 +62,17 @@ function _makeRow(rowLetter, cols) {
   for (let c = 1; c <= cols; c++) {
     const h = document.createElement('div');
     h.className = 'hole';
-    const holeId = `${rowLetter}${c}`;
-    h.dataset.holeId = holeId;
-    h.dataset.node   = _getNode(rowLetter, c);
-    _nodeMap[holeId] = h.dataset.node;
+    h.dataset.holeId = `${rowLetter}${c}`;
+    h.dataset.node = nodeOf(h.dataset.holeId);
     row.appendChild(h);
   }
   return row;
 }
 
 function _makeColumnNumbers(cols) {
-  const divs = [];
-  divs.push('<span class="bb-row-label-spacer"></span>');
+  const divs = ['<span class="bb-row-label-spacer"></span>'];
   for (let c = 1; c <= cols; c++) {
-    if (c % 5 === 0) {
-      divs.push(`<span class="bb-col-num">${c}</span>`);
-    } else {
-      divs.push('<span class="bb-col-num"></span>');
-    }
+    divs.push(`<span class="bb-col-num">${c % 5 === 0 ? c : ''}</span>`);
   }
   return divs.join('');
-}
-
-function _getNode(row, col) {
-  const isTop = ROWS_TOP.includes(row);
-  return isTop ? `T${col}` : `B${col}`;
-}
-
-export function getNodeForHole(holeId) {
-  return _nodeMap[holeId] ?? holeId;
-}
-
-export function getConnectedHoles(holeId) {
-  const node = getNodeForHole(holeId);
-  return Object.entries(_nodeMap)
-    .filter(([, n]) => n === node)
-    .map(([id]) => id);
-}
-
-export function highlightHole(holeEl, active) {
-  holeEl.classList.toggle('hole-highlight', active);
-}
-
-export function markHoleOccupied(holeId, occupied) {
-  const el = document.querySelector(`[data-hole-id="${holeId}"]`);
-  if (el) el.classList.toggle('hole-occupied', occupied);
 }

@@ -186,3 +186,13 @@
   font-weight: 600;
   color: var(--text-main);
 }
+
+.freeform-steps {
+  margin: 0 0 10px;
+  padding-left: 18px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-main);
+}
+
+.freeform-steps li { margin-bottom: 4px; }

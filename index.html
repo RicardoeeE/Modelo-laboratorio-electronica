@@ -117,6 +117,9 @@
           <span class="palette-label">Componentes:</span>
           <button class="palette-btn active" data-tool="select">↖ Selec.</button>
           <div class="palette-divider"></div>
+          <button class="palette-btn" data-tool="GEN"><span class="palette-swatch" style="background:#e8e000"></span>Gen</button>
+          <button class="palette-btn" data-tool="CH2"><span class="palette-swatch" style="background:#d040e0"></span>CH2</button>
+          <div class="palette-divider"></div>
           <button class="palette-btn" data-tool="R"     data-color="#e8a000"><span class="palette-swatch" style="background:#e8a000"></span>R</button>
           <button class="palette-btn" data-tool="C"     data-color="#4488ff"><span class="palette-swatch" style="background:#4488ff"></span>C</button>
           <button class="palette-btn" data-tool="L"     data-color="#44cc44"><span class="palette-swatch" style="background:#44cc44"></span>L</button>
@@ -128,13 +131,22 @@
           <div class="palette-divider"></div>
           <button class="palette-btn delete-btn" data-tool="delete">✕ Borrar</button>
           <button class="palette-btn" id="clear-board">⊘ Limpiar</button>
-          <div id="detected-circuit" style="display:none">—</div>
+        </div>
+
+        <!-- Estado de la placa: lo que pide el siguiente clic y lo que se ha reconocido -->
+        <div id="bb-status">
+          <span id="bb-hint"></span>
+          <label id="comp-editor" hidden>
+            <span id="comp-label"></span>
+            <input id="comp-value" type="text" inputmode="text" autocomplete="off" spellcheck="false">
+          </label>
+          <span id="detected-circuit" role="status" hidden></span>
         </div>
 
         <!-- Breadboard grid -->
         <div id="breadboard-grid" style="overflow:auto; flex:1;">
           <div id="breadboard" style="position:relative; display:inline-block;">
-            <svg id="bb-svg" style="position:absolute;top:0;left:0;pointer-events:none;"></svg>
+            <svg id="bb-svg"></svg>
           </div>
         </div>
       </div>

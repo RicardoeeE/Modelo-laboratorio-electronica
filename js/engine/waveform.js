@@ -1,39 +1,40 @@
-const N_HARMONICS = 20;
+const SAMPLES_PER_CYCLE = 160;
 const MIN_SAMPLE_RATE = 8000;
+const MIN_BUFFER = 1200;
+const MAX_BUFFER = 400000;
 
 export function computeSampleRate(freq) {
-  return Math.max(MIN_SAMPLE_RATE, freq * N_HARMONICS * 2 * 4);
+  return Math.max(MIN_SAMPLE_RATE, freq * SAMPLES_PER_CYCLE);
 }
 
-export function computeBufferSize(freq, sampleRate, cycles = 6) {
-  return Math.max(1200, Math.round(cycles * sampleRate / freq));
+// Muestras por calcular: al menos 6 ciclos y, si se pide, la ventana visible mas 2 ciclos
+// para que el disparo tenga donde buscar sin cortar la traza.
+export function computeBufferSize(freq, sampleRate, cycles = 6, windowSeconds = 0) {
+  const perCycle = sampleRate / freq;
+  const needed = Math.max(MIN_BUFFER, cycles * perCycle, windowSeconds * sampleRate + 2 * perCycle);
+  return Math.round(Math.min(MAX_BUFFER, needed));
 }
 
+// Formas exactas, sin serie de Fourier: truncarla daba +18 % de Vpp en la cuadrada (Gibbs).
 export function generateSamples(freq, amplitude, waveform, offset, sampleRate, numSamples) {
   const samples = new Float32Array(numSamples);
-  const dt = 1 / sampleRate;
 
   for (let i = 0; i < numSamples; i++) {
-    const t = i * dt;
-    let v = 0;
+    const cycle = freq * i / sampleRate;
+    const p = cycle - Math.floor(cycle);
+    let v;
 
     switch (waveform) {
-      case 'sine':
-        v = amplitude * Math.sin(2 * Math.PI * freq * t);
-        break;
       case 'square':
-        for (let n = 1; n <= N_HARMONICS * 2 - 1; n += 2) {
-          v += (4 * amplitude / (n * Math.PI)) * Math.sin(2 * Math.PI * n * freq * t);
-        }
+        v = p < 0.5 ? amplitude : -amplitude;
         break;
       case 'triangle':
-        for (let n = 1; n <= N_HARMONICS * 2 - 1; n += 2) {
-          const sign = Math.pow(-1, (n - 1) / 2);
-          v += sign * (8 * amplitude / (Math.PI * Math.PI * n * n)) * Math.sin(2 * Math.PI * n * freq * t);
-        }
+        if (p < 0.25) v = 4 * amplitude * p;
+        else if (p < 0.75) v = amplitude * (2 - 4 * p);
+        else v = amplitude * (4 * p - 4);
         break;
       default:
-        v = amplitude * Math.sin(2 * Math.PI * freq * t);
+        v = amplitude * Math.sin(2 * Math.PI * cycle);
     }
 
     samples[i] = v + offset;

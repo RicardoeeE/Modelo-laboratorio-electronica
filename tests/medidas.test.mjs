@@ -1,8 +1,11 @@
 // Contrasta las medidas del osciloscopio con el calculo. Ejecutar: node --test tests/
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { measureFrequency, measurePhase, measureVpp } from '../js/engine/measurements.js';
+import {
+  measureFrequency, measurePhase, measureVpp,
+} from '../js/engine/measurements.js';
 import { computeOutput } from '../js/engine/circuit-engine.js';
+import { generateSamples } from '../js/engine/waveform.js';
 
 const seno = (f, sr, n, fase = 0, amp = 1, offset = 0) => Float32Array.from(
   { length: n }, (_, i) => amp * Math.sin(2 * Math.PI * f * i / sr + fase) + offset);
@@ -75,4 +78,35 @@ for (const [nombre, id, params, f, fase, vpp] of CASOS) {
 test('amplificadores: inversor a 180 y no inversor en fase', () => {
   cerca(Math.abs(circuito('opamp-inverting', { Rin: 10000, Rf: 100000 }, 1000, 0.5).fase), 180, 1.5, 'inversor');
   cerca(circuito('opamp-noninverting', { R1: 10000, Rf: 90000 }, 1000, 0.5).fase, 0, 1.5, 'no inversor');
+});
+
+// ── Señales del generador ──
+test('generador: cuadrada y triangular dan el Vpp pedido y la fase del seno', () => {
+  const seno160 = generateSamples(249, 1, 'sine', 0, 39840, 1600);
+  for (const waveform of ['square', 'triangle']) {
+    const s = generateSamples(249, 1, waveform, 0, 39840, 1600);
+    cerca(measureVpp(s), 2, 1e-2, `Vpp ${waveform}`);
+    cerca(measureFrequency(s, 39840), 249, 0.3, `f ${waveform}`);
+    cerca(measurePhase(seno160, s, 39840), 0, 2.5, `fase ${waveform}`);
+  }
+});
+
+test('integrador con cuadrada: triangular de Vpp = V·T/(2RC)', () => {
+  const { ch2 } = computeOutput({
+    fg: { freq: 249, amplitude: 1, waveform: 'square', offset: 0, enabled: true },
+    psu: { vPos: 15, vNeg: -15 },
+    circuit: { activeExperiment: 'opamp-integrator', params: { R: 10000, C: 1e-7, Rf: 1e6 } },
+  });
+  const teoria = 1 / 249 / (2 * 1e-3);
+  cerca(measureVpp(ch2), teoria, teoria * 0.02, 'Vpp');
+});
+
+test('diferenciador con triangular: cuadrada de ±RC·4Af', () => {
+  const { ch2 } = computeOutput({
+    fg: { freq: 249, amplitude: 1, waveform: 'triangle', offset: 0, enabled: true },
+    psu: { vPos: 15, vNeg: -15 },
+    circuit: { activeExperiment: 'opamp-differentiator', params: { R: 10000, C: 1e-7, Rs: 100 } },
+  });
+  const teoria = 2 * 1e-3 * 4 * 249;
+  cerca(measureVpp(ch2), teoria, teoria * 0.02, 'Vpp');
 });

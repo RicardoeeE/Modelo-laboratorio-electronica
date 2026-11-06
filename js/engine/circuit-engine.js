@@ -7,7 +7,7 @@ import { compute as opampInverting }  from '../experiments/circuits/opamp-invert
 import { compute as opampNonInv }     from '../experiments/circuits/opamp-noninverting.js';
 import { compute as opampIntegrator } from '../experiments/circuits/opamp-integrator.js';
 import { compute as opampDiff }       from '../experiments/circuits/opamp-differentiator.js';
-import { compute as bjtCE }           from '../experiments/circuits/bjt-common-emitter.js';
+import { compute as bjtCE, settlingTau as bjtSettlingTau } from '../experiments/circuits/bjt-common-emitter.js';
 import { compute as diodeHalf }       from '../experiments/circuits/diode-half-wave.js';
 import { compute as diodeFull }       from '../experiments/circuits/diode-full-wave.js';
 
@@ -40,6 +40,7 @@ function _settlingTau(id, p) {
     case 'opamp-differentiator': return (p.Rs ?? 100) * (p.C ?? 1e-7);
     case 'diode-half-wave':
     case 'diode-full-wave':      return (p.Rload ?? 10000) * (p.Csmooth ?? 0);
+    case 'bjt-common-emitter':   return bjtSettlingTau(p);
     default:                     return 0;
   }
 }

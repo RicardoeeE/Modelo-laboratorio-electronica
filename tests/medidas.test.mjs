@@ -6,6 +6,7 @@ import {
 } from '../js/engine/measurements.js';
 import { computeOutput } from '../js/engine/circuit-engine.js';
 import { generateSamples } from '../js/engine/waveform.js';
+import { operatingPoint } from '../js/experiments/circuits/bjt-common-emitter.js';
 
 const seno = (f, sr, n, fase = 0, amp = 1, offset = 0) => Float32Array.from(
   { length: n }, (_, i) => amp * Math.sin(2 * Math.PI * f * i / sr + fase) + offset);
@@ -78,6 +79,78 @@ for (const [nombre, id, params, f, fase, vpp] of CASOS) {
 test('amplificadores: inversor a 180 y no inversor en fase', () => {
   cerca(Math.abs(circuito('opamp-inverting', { Rin: 10000, Rf: 100000 }, 1000, 0.5).fase), 180, 1.5, 'inversor');
   cerca(circuito('opamp-noninverting', { R1: 10000, Rf: 90000 }, 1000, 0.5).fase, 0, 1.5, 'no inversor');
+});
+
+// ── Transistor: punto de trabajo (Thevenin de la base) y ganancia contra la formula ──
+const BJT = { R1: 100000, R2: 22000, Rc: 4700, RE: 1000, beta: 200 };
+const VCC12 = { vPos: 12, vNeg: -15 };
+
+function bjtTeoria({ R1, R2, Rc, RE, beta }, vcc) {
+  const Rth = R1 * R2 / (R1 + R2);
+  const IB = (vcc * R2 / (R1 + R2) - 0.7) / (Rth + (beta + 1) * RE);
+  const IC = beta * IB;
+  const VE = (beta + 1) * IB * RE;
+  return { IC, VE, VB: VE + 0.7, VCE: vcc - IC * Rc - VE, Av: -beta * Rc / (beta * 0.026 / IC + (beta + 1) * RE) };
+}
+
+function bjt(amp, { params = BJT, f = 1000, psu = VCC12 } = {}) {
+  const { ch1, ch2, sampleRate } = computeOutput({
+    fg: { freq: f, amplitude: amp, waveform: 'sine', offset: 0, enabled: true },
+    psu,
+    circuit: { activeExperiment: 'bjt-common-emitter', params },
+  });
+  return { fase: measurePhase(ch1, ch2, sampleRate), vpp: measureVpp(ch2) };
+}
+
+test('transistor: punto de trabajo de la guia (VB 2,04 V, IC 1,34 mA, VCE 4,4 V)', () => {
+  const op = operatingPoint(BJT, 12);
+  const t = bjtTeoria(BJT, 12);
+  assert.equal(op.region, 'activa');
+  cerca(op.IC, t.IC, 1e-9, 'IC');
+  cerca(op.IC, 1.34e-3, 0.01e-3, 'IC de la guia');
+  cerca(op.VB, 2.04, 0.01, 'VB de la guia');
+  cerca(op.VC - op.VE, t.VCE, 1e-6, 'VCE');
+  cerca(op.VC - op.VE, 4.4, 0.05, 'VCE de la guia');
+});
+
+test('transistor: ganancia −Rc/(re+RE) e inversion, no −gm·Rc', () => {
+  const t = bjtTeoria(BJT, 12);
+  cerca(t.Av, -4.59, 0.01, 'Av teorica');
+  const r = bjt(0.02);
+  const esperado = 2 * 0.02 * Math.abs(t.Av);
+  cerca(r.vpp, esperado, esperado * 0.02, 'Vpp a 20 mVp');
+  cerca(Math.abs(r.fase), 180, 0.5, 'inversion a 1 kHz');
+});
+
+test('transistor: la ganancia casi no depende de beta (RE sin desacoplar)', () => {
+  for (const beta of [100, 400]) {
+    const esperado = 0.04 * Math.abs(bjtTeoria({ ...BJT, beta }, 12).Av);
+    cerca(bjt(0.02, { params: { ...BJT, beta } }).vpp, esperado, esperado * 0.02, `beta ${beta}`);
+    cerca(esperado / 0.04, 4.59, 0.1, `Av con beta ${beta}`);
+  }
+});
+
+test('transistor: recorte en saturacion y en corte donde dice la guia', () => {
+  const op = operatingPoint(BJT, 12);
+  const vcSat = 12 - (12 - 0.2) / (BJT.Rc + BJT.RE) * BJT.Rc;
+  cerca(op.vcMin, vcSat, 1e-6, 'VC de saturacion');
+  cerca((op.VC - vcSat) / Math.abs(op.Av), 0.75, 0.03, 'Vin al que empieza a saturar');
+  cerca((12 - op.VC) / Math.abs(op.Av), 1.4, 0.05, 'Vin al que empieza a cortar');
+  // Por debajo sigue lineal; con los dos recortes, el Vpp queda limitado a Vcc − VCsat.
+  cerca(bjt(0.6).vpp, 1.2 * Math.abs(op.Av), 0.06, 'lineal a 0,6 Vp');
+  cerca(bjt(5).vpp, 12 - vcSat, 0.05, 'recorte total');
+});
+
+test('transistor: fuera de zona activa no hay ganancia', () => {
+  assert.equal(operatingPoint({ ...BJT, Rc: 20000 }, 12).region, 'saturacion');
+  assert.equal(bjt(0.02, { params: { ...BJT, Rc: 20000 } }).vpp, 0);
+  assert.equal(operatingPoint(BJT, 3).region, 'corte');
+  assert.equal(bjt(0.02, { psu: { vPos: 3, vNeg: -15 } }).vpp, 0);
+});
+
+test('transistor: el condensador de entrada solo influye a muy baja frecuencia', () => {
+  const op = operatingPoint(BJT, 12);
+  cerca(1 / (2 * Math.PI * op.Rin * 10e-6), 0.96, 0.01, 'fc de entrada');
 });
 
 // ── Señales del generador ──

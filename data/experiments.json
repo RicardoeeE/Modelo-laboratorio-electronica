@@ -25,7 +25,7 @@
       "id": "rc-highpass",
       "title": "Filtro RC Paso Alto",
       "icon": "⋓",
-      "description": "El condensador bloquea DC y paso baja las frecuencias bajas. fc = 1/(2πRC). Por encima de fc la señal pasa casi sin atenuación.",
+      "description": "El condensador bloquea la continua y atenúa las frecuencias bajas. fc = 1/(2πRC). Por encima de fc la señal pasa casi sin atenuación.",
       "defaultFG":  { "freq": 249, "amplitude": 1.0, "waveform": "sine",   "offset": 0, "enabled": true },
       "defaultPSU": { "vPos": 15,  "vNeg": -15 },
       "defaultParams": { "R": 1000, "C": 1e-7 },
@@ -115,14 +115,14 @@
       "defaultParams": { "R1": 10000, "Rf": 90000 },
       "paramControls": [
         { "key": "R1", "label": "R1", "unit": "kΩ", "min": 1, "max": 100,  "step": 1,  "default": 10,  "scale": 1000 },
-        { "key": "Rf", "label": "Rf", "unit": "kΩ", "min": 1, "max": 1000, "step": 10, "default": 90,  "scale": 1000 }
+        { "key": "Rf", "label": "Rf", "unit": "kΩ", "min": 0, "max": 1000, "step": 10, "default": 90,  "scale": 1000 }
       ],
       "probes": { "CH1": "Entrada (Vin)", "CH2": "Salida (Vout)" },
       "formula": "Av = 1 + Rf/R1",
       "steps": [
         { "n": 1, "title": "Montar",         "text": "Conecta Vin al pin 3 (+). R1 entre pin 2 (−) y GND. Rf entre pin 2 y pin 6 (salida). CH2 en pin 6." },
         { "n": 2, "title": "Medir ganancia", "text": "Con R1=10 kΩ y Rf=90 kΩ: Av = 1+90/10 = 10. Vin=0,5 Vp → Vout ≈ 5 Vp, en fase." },
-        { "n": 3, "title": "Buffer (Av=1)",  "text": "Cambia Rf=0 (cortocircuito pin 2→6), R1=∞. Vout = Vin exacto. Útil para adaptación de impedancias." }
+        { "n": 3, "title": "Buffer (Av=1)",  "text": "Pon Rf=0 (cortocircuito del pin 2 al 6). Sin caída en Rf, R1 no influye: Av = 1 y Vout = Vin. Útil para adaptación de impedancias." }
       ]
     },
     {
@@ -151,7 +151,7 @@
       "id": "opamp-differentiator",
       "title": "Diferenciador con Op-Amp",
       "icon": "d/dt",
-      "description": "Vout = −RC × dVin/dt. Triangular → cuadrada; senoidal → cosenoidal (+90°). Rs limita la ganancia a alta frecuencia.",
+      "description": "Vout = −RC × dVin/dt. Triangular → cuadrada; senoidal → cosenoidal retrasada −90°. Rs limita la ganancia a alta frecuencia.",
       "defaultFG":  { "freq": 249, "amplitude": 1.0, "waveform": "triangle", "offset": 0, "enabled": true },
       "defaultPSU": { "vPos": 15, "vNeg": -15 },
       "defaultParams": { "R": 10000, "C": 1e-7, "Rs": 100 },
@@ -173,7 +173,7 @@
       "id": "bjt-common-emitter",
       "title": "Amplificador Emisor Común (BJT)",
       "icon": "Q",
-      "description": "Transistor NPN en configuración emisor-común. Av ≈ −gm·Rc. Señal de salida invertida y amplificada.",
+      "description": "Transistor NPN en emisor común con RE sin desacoplar. Av ≈ −Rc/(re+RE) ≈ −4,6: salida invertida y amplificada. Con RE desacoplada subiría a −gm·Rc ≈ −240, pero ese caso no se simula.",
       "defaultFG":  { "freq": 1000, "amplitude": 0.02, "waveform": "sine", "offset": 0, "enabled": true },
       "defaultPSU": { "vPos": 12, "vNeg": -15 },
       "defaultParams": { "R1": 100000, "R2": 22000, "Rc": 4700, "RE": 1000, "beta": 200 },
@@ -183,13 +183,13 @@
         { "key": "Rc",   "label": "Rc",  "unit": "kΩ", "min": 0.1, "max": 20,   "step": 0.1,"default": 4.7,  "scale": 1000 },
         { "key": "RE",   "label": "RE",  "unit": "kΩ", "min": 0.1, "max": 10,   "step": 0.1,"default": 1,    "scale": 1000 }
       ],
-      "probes": { "CH1": "Base (entrada)", "CH2": "Colector (salida)" },
-      "formula": "Av = −gm·Rc = −(Ic/VT)·Rc",
+      "probes": { "CH1": "Base (entrada)", "CH2": "Colector, tras Cout (solo alterna)" },
+      "formula": "Av = −Rc/(re+RE), con re = VT/IC",
       "steps": [
-        { "n": 1, "title": "Punto de trabajo",  "text": "Con Vcc=+12 V (PSU V+), R1=100 kΩ, R2=22 kΩ: VB ≈ 2,4 V, IC ≈ 1,7 mA, VCE ≈ 4 V. Verifica que el transistor esté en zona activa." },
-        { "n": 2, "title": "Pequeña señal",     "text": "Vin = 20 mVp a 1 kHz (pequeña señal para no distorsionar). CH2 debe verse amplificada e invertida." },
-        { "n": 3, "title": "Medir ganancia",    "text": "Av ≈ −Rc/RE = −4,7 kΩ / 1 kΩ ≈ −4,7 (con degeneración de emisor sin bypass)." },
-        { "n": 4, "title": "Distorsión",        "text": "Sube Vin hasta ~200 mV: verás clipping asimétrico cuando el transistor satura o corta." }
+        { "n": 1, "title": "Punto de trabajo",  "text": "Con Vcc=+12 V (PSU V+), R1=100 kΩ, R2=22 kΩ, β=200: VB ≈ 2,04 V, IC ≈ 1,34 mA, VCE ≈ 4,4 V. Está en zona activa: VCE > 0,2 V." },
+        { "n": 2, "title": "Pequeña señal",     "text": "Vin = 20 mVp a 1 kHz (pequeña señal para no distorsionar). CH2 debe verse invertida (fase ≈ ±180°) y con unos 92 mVp." },
+        { "n": 3, "title": "Medir ganancia",    "text": "Mide CH2/CH1: Av ≈ −Rc/(re+RE) = −4,7 kΩ/(19 Ω + 1 kΩ) ≈ −4,6. La degeneración de RE hace que casi no dependa de β." },
+        { "n": 4, "title": "Distorsión",        "text": "Sube Vin por encima de ≈ 0,75 Vp: CH2 se recorta por abajo (saturación). Por encima de ≈ 1,4 Vp se recorta también por arriba (corte). Es asimétrico porque el punto de trabajo no está centrado." }
       ]
     },
     {
@@ -209,7 +209,7 @@
       "steps": [
         { "n": 1, "title": "Sin condensador",  "text": "FG: senoidal 5 Vp a 50 Hz. CH2 muestra sólo semiciclos positivos (menos 0,7 V de caída del diodo)." },
         { "n": 2, "title": "Con condensador",  "text": "Añade C=100 µF: el condensador se carga en los picos y descarga lentamente. Verás una tensión casi continua con pequeño rizado." },
-        { "n": 3, "title": "Carga la carga",   "text": "Reduce Rload a 1 kΩ: el rizado aumenta porque el condensador se descarga más rápido." }
+        { "n": 3, "title": "Aumenta la carga",   "text": "Reduce Rload a 1 kΩ: el rizado aumenta porque el condensador se descarga más rápido." }
       ]
     },
     {

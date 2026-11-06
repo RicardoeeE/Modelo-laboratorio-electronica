@@ -2,7 +2,7 @@
 export function compute(inputSamples, params, psu, sampleRate) {
   const Rload   = params.Rload   ?? 10000;
   const Csmooth = params.Csmooth ?? 0;
-  const Vf      = 0.7;
+  const Vf      = params.Vf ?? 0.7;
 
   const output = new Float32Array(inputSamples.length);
 

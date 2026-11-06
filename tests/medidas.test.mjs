@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  measureFrequency, measurePhase, measureVpp, visibleWindow, chooseVdiv,
+  measureFrequency, measurePhase, measureVpp, measureVmax, measureVmin, visibleWindow, chooseVdiv,
 } from '../js/engine/measurements.js';
 import { computeOutput } from '../js/engine/circuit-engine.js';
 import { generateSamples } from '../js/engine/waveform.js';
@@ -151,6 +151,77 @@ test('transistor: fuera de zona activa no hay ganancia', () => {
 test('transistor: el condensador de entrada solo influye a muy baja frecuencia', () => {
   const op = operatingPoint(BJT, 12);
   cerca(1 / (2 * Math.PI * op.Rin * 10e-6), 0.96, 0.01, 'fc de entrada');
+});
+
+// ── Rectificadores ──
+function rect(id, params, amp, f = 50) {
+  const { ch1, ch2, sampleRate } = computeOutput({
+    fg: { freq: f, amplitude: amp, waveform: 'sine', offset: 0, enabled: true },
+    psu: { vPos: 15, vNeg: -15 },
+    circuit: { activeExperiment: id, params },
+  });
+  // Media en ciclos enteros, para no sesgarla con un trozo de ciclo.
+  const perCycle = Math.round(sampleRate / f);
+  const n = Math.floor(ch2.length / perCycle) * perCycle;
+  let suma = 0;
+  for (let i = 0; i < n; i++) suma += ch2[i];
+  return {
+    f1: measureFrequency(ch1, sampleRate), f2: measureFrequency(ch2, sampleRate),
+    fase: measurePhase(ch1, ch2, sampleRate), vpp: measureVpp(ch2),
+    max: measureVmax(ch2), min: measureVmin(ch2), media: suma / n,
+  };
+}
+
+// Media exacta de max(A·sen − Vd, 0) en un periodo: conduce entre a y pi − a.
+const mediaExacta = (A, Vd) => {
+  const a = Math.asin(Vd / A);
+  return (2 * A * Math.cos(a) - Vd * (Math.PI - 2 * a)) / (2 * Math.PI);
+};
+
+test('media onda: pico Vin − 0,7, cero en el semiciclo negativo, media exacta y en fase', () => {
+  for (const A of [5, 10, 2]) {
+    const r = rect('diode-half-wave', { Rload: 10000, Csmooth: 0 }, A);
+    cerca(r.max, A - 0.7, 1e-3, `pico ${A}`);
+    assert.equal(r.min, 0);
+    cerca(r.media, mediaExacta(A, 0.7), 0.01, `media ${A}`);
+    cerca(r.f2, 50, 0.1, 'misma frecuencia');
+    cerca(r.fase, 0, 0.1, 'en fase');
+  }
+});
+
+test('media onda: por debajo de 0,7 V no conduce', () => {
+  const r = rect('diode-half-wave', { Rload: 10000, Csmooth: 0 }, 0.5);
+  assert.equal(r.vpp, 0);
+  assert.equal(r.fase, null);
+});
+
+test('media onda con condensador: rizado V/(f·R·C)', () => {
+  for (const [Rload, Csmooth] of [[10000, 1e-4], [1000, 1e-4], [1000, 4.7e-4]]) {
+    const r = rect('diode-half-wave', { Rload, Csmooth }, 5);
+    cerca(r.max, 4.3, 1e-3, 'pico');
+    const teoria = 4.3 / (50 * Rload * Csmooth);
+    cerca(r.vpp, teoria, teoria * 0.2, `rizado R=${Rload}`);
+  }
+});
+
+test('puente: |Vin| − 1,4, frecuencia doble y sin fundamental', () => {
+  for (const f of [50, 100, 1000]) {
+    const r = rect('diode-full-wave', { Rload: 10000, Csmooth: 0 }, 10, f);
+    cerca(r.max, 8.6, 1e-3, 'pico');
+    assert.equal(r.min, 0);
+    cerca(r.media, 2 * mediaExacta(10, 1.4), 0.02, 'media');
+    cerca(r.f1, f, f * 1e-3, 'f CH1');
+    cerca(r.f2, 2 * f, 2 * f * 1e-3, 'f CH2');
+    assert.equal(r.fase, null, 'sin componente a la frecuencia de CH1 no hay fase');
+  }
+});
+
+test('puente con condensador: rizado V/(2f·R·C), la mitad que en media onda', () => {
+  const r = rect('diode-full-wave', { Rload: 1000, Csmooth: 1e-4 }, 10);
+  const teoria = 8.6 / (2 * 50 * 1000 * 1e-4);
+  cerca(r.vpp, teoria, teoria * 0.2, 'rizado');
+  const media = rect('diode-half-wave', { Rload: 1000, Csmooth: 1e-4 }, 10);
+  assert.ok(r.vpp < media.vpp * 0.6, `${r.vpp} frente a ${media.vpp}`);
 });
 
 // ── Señales del generador ──

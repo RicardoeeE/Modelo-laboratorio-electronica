@@ -107,3 +107,20 @@ export function findTriggerPoint(samples, level, slope = 'rising', searchLimit =
   }
   return 0;
 }
+
+// Tramo visible, comun a los dos canales: el disparo lo manda CH1. Si cada canal buscara
+// su propio disparo, las trazas saldrian alineadas y el desfase no se veria en pantalla.
+export function visibleWindow(ch1, sampleRate, timeDiv, level, divisions = 10) {
+  const count = Math.max(2, Math.ceil(timeDiv * divisions * sampleRate) + 1);
+  const limit = Math.min(ch1.length - count, ch1.length >> 1);
+  const trigger = findTriggerPoint(ch1, level, 'rising', limit);
+  const start = Math.max(0, Math.min(trigger, ch1.length - count));
+  return { start, count };
+}
+
+export const VDIV_STEPS = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20];
+
+// V/div mas pequeno con el que un pico cabe en la pantalla (8 divisiones, margen de media).
+export function chooseVdiv(peak) {
+  return VDIV_STEPS.find(v => v * 3.5 >= peak) ?? VDIV_STEPS[VDIV_STEPS.length - 1];
+}

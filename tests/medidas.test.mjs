@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  measureFrequency, measurePhase, measureVpp,
+  measureFrequency, measurePhase, measureVpp, visibleWindow, chooseVdiv,
 } from '../js/engine/measurements.js';
 import { computeOutput } from '../js/engine/circuit-engine.js';
 import { generateSamples } from '../js/engine/waveform.js';
@@ -109,4 +109,45 @@ test('diferenciador con triangular: cuadrada de ±RC·4Af', () => {
   });
   const teoria = 2 * 1e-3 * 4 * 249;
   cerca(measureVpp(ch2), teoria, teoria * 0.02, 'Vpp');
+});
+
+// ── Osciloscopio: lo que se ve en pantalla ──
+test('pantalla: CH2 usa el disparo de CH1, asi que el desfase se ve', () => {
+  const { ch1, ch2, sampleRate } = computeOutput({
+    fg: { freq: 249, amplitude: 1, waveform: 'sine', offset: 0, enabled: true },
+    psu: { vPos: 15, vNeg: -15 },
+    circuit: { activeExperiment: 'opamp-integrator', params: { R: 10000, C: 1e-7, Rf: 1e6 } },
+    scope: { timeDiv: 1e-3 },
+  });
+  const { start } = visibleWindow(ch1, sampleRate, 1e-3, 0);
+  cerca(ch1[start], 0, 0.05, 'CH1 arranca en el disparo');
+  // Integrador: CH2 adelanta casi 90, asi que esta cerca de su maximo cuando CH1 cruza cero.
+  assert.ok(ch2[start] > 0.6, `CH2 en el disparo: ${ch2[start]}`);
+});
+
+test('pantalla: con t/div grande el buffer cubre la ventana y la traza no se corta', () => {
+  for (const timeDiv of [5e-3, 0.02, 0.05]) {
+    const { ch1, sampleRate } = computeOutput({
+      fg: { freq: 249, amplitude: 1, waveform: 'sine', offset: 0, enabled: true },
+      psu: { vPos: 15, vNeg: -15 },
+      circuit: { activeExperiment: 'rc-lowpass', params: { R: 1000, C: 1e-7 } },
+      scope: { timeDiv },
+    });
+    const { start, count } = visibleWindow(ch1, sampleRate, timeDiv, 0);
+    assert.ok(start + count <= ch1.length, `t/div ${timeDiv}: ${start}+${count} de ${ch1.length}`);
+    assert.ok(start > 0, `t/div ${timeDiv}: sin disparo`);
+  }
+});
+
+test('pantalla: t/div muy pequeno todavia deja dos muestras para trazar', () => {
+  const s = generateSamples(249, 1, 'sine', 0, 39840, 1600);
+  assert.ok(visibleWindow(s, 39840, 1e-6, 0).count >= 2);
+});
+
+test('V/div automatico: la senal cabe y aprovecha la pantalla', () => {
+  assert.equal(chooseVdiv(5), 2);
+  assert.equal(chooseVdiv(10), 5);
+  assert.equal(chooseVdiv(0.02), 0.01);
+  assert.equal(chooseVdiv(1), 0.5);
+  assert.equal(chooseVdiv(1000), 20);
 });

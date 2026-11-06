@@ -1,6 +1,6 @@
 import { getState, setScopeMeasurements } from '../state.js';
 import {
-  measureFrequency, measureVpp, measureVmax, measurePhase, findTriggerPoint
+  measureFrequency, measureVpp, measureVmax, measurePhase, visibleWindow
 } from '../engine/measurements.js';
 
 const GRID_H = 10;
@@ -9,6 +9,7 @@ const GRID_V = 8;
 let canvas, ctx, dpr;
 let rafId = null;
 let _ch1 = null, _ch2 = null, _sampleRate = 10000;
+let _pending = null;
 
 export function init(canvasEl) {
   canvas = canvasEl;
@@ -41,16 +42,22 @@ function _clearScreen() {
   _drawGrid(w, h);
 }
 
+// Con STOP, la pantalla se queda con lo capturado; los datos nuevos esperan a RUN.
 export function update(ch1, ch2, sampleRate) {
-  _ch1 = ch1;
-  _ch2 = ch2;
-  _sampleRate = sampleRate;
-  if (!getState().scope.running) {
-    _render();
-  }
+  _pending = { ch1, ch2, sampleRate };
+  if (getState().scope.running) _applyPending();
+}
+
+function _applyPending() {
+  if (!_pending) return;
+  _ch1 = _pending.ch1;
+  _ch2 = _pending.ch2;
+  _sampleRate = _pending.sampleRate;
+  _pending = null;
 }
 
 export function startLoop() {
+  _applyPending();
   if (rafId) return;
   const loop = () => {
     _render();
@@ -87,11 +94,11 @@ function _render() {
   const divW = w / GRID_H;
   const divH = h / GRID_V;
 
-  if (_ch1 && scope.ch1.enabled) {
-    _drawTrace(_ch1, _sampleRate, scope.ch1, scope.timeDiv, scope.triggerLevel, divW, divH, w, h);
-  }
-  if (_ch2 && scope.ch2.enabled) {
-    _drawTrace(_ch2, _sampleRate, scope.ch2, scope.timeDiv, 0, divW, divH, w, h);
+  if (_ch1) {
+    const view = visibleWindow(_ch1, _sampleRate, scope.timeDiv, scope.triggerLevel, GRID_H);
+    const pixPerSample = w / (scope.timeDiv * GRID_H * _sampleRate);
+    if (scope.ch1.enabled) _drawTrace(_ch1, view, pixPerSample, scope.ch1, divH, h);
+    if (_ch2 && scope.ch2.enabled) _drawTrace(_ch2, view, pixPerSample, scope.ch2, divH, h);
   }
 
   _drawTrigger(scope.triggerLevel, scope.ch1.vdiv, scope.ch1.position, divH, w, h);
@@ -100,12 +107,13 @@ function _render() {
   // Compute and store measurements
   if (_ch1 && _ch2) {
     const freq  = measureFrequency(_ch1, _sampleRate);
+    const freq2 = measureFrequency(_ch2, _sampleRate);
     const vpp1  = measureVpp(_ch1);
     const vpp2  = measureVpp(_ch2);
     const vmax1 = measureVmax(_ch1);
     const phase = measurePhase(_ch1, _ch2, _sampleRate);
-    setScopeMeasurements({ freq, vpp1, vpp2, vmax1, phase });
-    _drawMeasurements(w, h, { freq, vpp1, vpp2, vmax1, phase });
+    setScopeMeasurements({ freq, freq2, vpp1, vpp2, vmax1, phase });
+    _drawMeasurements(w, h, { freq, freq2, vpp1, vpp2, vmax1, phase });
   }
 }
 
@@ -160,18 +168,10 @@ function _drawGrid(w, h) {
   }
 }
 
-function _drawTrace(samples, sampleRate, chCfg, timeDiv, trigLevel, divW, divH, w, h) {
-  const totalTime     = timeDiv * GRID_H;
-  const samplesToShow = Math.ceil(totalTime * sampleRate);
-  if (samplesToShow <= 0) return;
-
-  // Trigger alignment
-  const trigStart = findTriggerPoint(samples, trigLevel, 'rising', Math.min(samples.length - samplesToShow, samples.length >> 1));
-  const startIdx  = Math.max(0, Math.min(trigStart, samples.length - samplesToShow));
-
-  const pixPerSample = w / samplesToShow;
-  const yCenter      = h / 2 - chCfg.position * divH;
-  const yScale       = divH / chCfg.vdiv;
+function _drawTrace(samples, view, pixPerSample, chCfg, divH, h) {
+  const { start: startIdx, count } = view;
+  const yCenter = h / 2 - chCfg.position * divH;
+  const yScale  = divH / chCfg.vdiv;
 
   ctx.save();
   ctx.shadowBlur  = 5;
@@ -181,7 +181,7 @@ function _drawTrace(samples, sampleRate, chCfg, timeDiv, trigLevel, divW, divH, 
   ctx.beginPath();
 
   let started = false;
-  const end = Math.min(startIdx + samplesToShow, samples.length);
+  const end = Math.min(startIdx + count, samples.length);
   for (let i = startIdx; i < end; i++) {
     const x = (i - startIdx) * pixPerSample;
     const y = yCenter - samples[i] * yScale;
@@ -252,11 +252,12 @@ function _drawMeasurements(w, h, m) {
   let y = 30;
 
   ctx.fillStyle = 'rgba(0,12,0,0.72)';
-  ctx.fillRect(x - 8, y - 12, 152, lineH * 4 + 6);
+  ctx.fillRect(x - 8, y - 12, 152, lineH * 5 + 6);
 
   ctx.font = '11px monospace';
   ctx.fillStyle = 'rgba(0,255,100,0.85)';
-  ctx.fillText(`f: ${_fmtHz(m.freq)}`, x, y); y += lineH;
+  ctx.fillText(`f CH1: ${_fmtHz(m.freq)}`, x, y); y += lineH;
+  ctx.fillText(`f CH2: ${_fmtHz(m.freq2)}`, x, y); y += lineH;
 
   ctx.fillStyle = getState().scope.ch1.color;
   ctx.fillText(`CH1 Vpp: ${m.vpp1.toFixed(3)}V`, x, y); y += lineH;
@@ -289,6 +290,7 @@ function _fmtPhase(p) {
 }
 
 function _fmtHz(f) {
+  if (!f) return '—';
   if (f >= 1e6) return `${(f / 1e6).toFixed(3)}MHz`;
   if (f >= 1e3) return `${(f / 1e3).toFixed(2)}kHz`;
   return `${f.toFixed(1)}Hz`;

@@ -55,7 +55,7 @@ export function computeOutput(state) {
   const { fg, psu, circuit } = state;
 
   const sampleRate  = computeSampleRate(fg.freq);
-  const bufferSize  = computeBufferSize(fg.freq, sampleRate);
+  const bufferSize  = computeBufferSize(fg.freq, sampleRate, 6, (state.scope?.timeDiv ?? 0) * 10);
   const computeFn   = circuitMap[circuit.activeExperiment];
 
   if (!fg.enabled || !computeFn) {

@@ -25,3 +25,7 @@ Repo público a propósito (simulador web); excepción apuntada en `dev-meta/NOR
 - **Disparo:** lo manda CH1 para los dos canales. Con un disparo por canal las trazas salían alineadas y el desfase medido no se veía.
 - **Señales exactas:** cuadrada y triangular dejan de ser series de Fourier truncadas, que daban +18 % de Vpp por Gibbs.
 - **Sin licencia todavía:** pendiente de confirmar de quién es `data/theory.json`.
+
+## 2026-11-06 — Paso alto exacto y barrido de frecuencias
+- **Paso alto:** la fórmula `α(y + Δx)` solo vale si dt ≪ τ: daba −50 % de Vpp a 50 Hz y CH2 plano con τ muy pequeña. Se usa la solución exacta para entrada lineal en cada paso. No se usa la bilineal porque, con τ ≪ dt, su polo cerca de −1 deja una oscilación que tarda en apagarse.
+- **Pruebas:** cada circuito lineal se compara con H(jω) de 50 Hz a 100 kHz, no solo en el corte, que era donde el fallo quedaba dentro de la tolerancia.

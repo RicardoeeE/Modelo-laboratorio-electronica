@@ -331,3 +331,43 @@ test('guia: cada experimento arranca con parametros dentro de sus limites', () =
     }
   }
 });
+
+// ── Barrido: toda la banda, no solo la frecuencia de corte ──
+const div = (a, b) => {
+  const d = b.re ** 2 + b.im ** 2;
+  return { re: (a.re * b.re + a.im * b.im) / d, im: (a.im * b.re - a.re * b.im) / d };
+};
+const GBW = 2 * Math.PI * 1e6;
+const RESPUESTA = {
+  'rc-lowpass': (w, p) => div({ re: 1, im: 0 }, { re: 1, im: w * p.R * p.C }),
+  'rc-highpass': (w, p) => div({ re: 0, im: w * p.R * p.C }, { re: 1, im: w * p.R * p.C }),
+  'rl-lowpass': (w, p) => div({ re: 1, im: 0 }, { re: 1, im: w * p.L / p.R }),
+  'rl-highpass': (w, p) => div({ re: 0, im: w * p.L / p.R }, { re: 1, im: w * p.L / p.R }),
+  'opamp-integrator': (w, p) => div({ re: -p.Rf / p.R, im: 0 }, { re: 1, im: w * p.Rf * p.C }),
+  'opamp-differentiator': (w, p) => div({ re: 0, im: -w * p.R * p.C }, { re: 1, im: w * p.Rs * p.C }),
+  'opamp-inverting': (w, p) => div({ re: -p.Rf / p.Rin, im: 0 }, { re: 1, im: w * (p.Rf / p.Rin) / GBW }),
+  'opamp-noninverting': (w, p) => div({ re: 1 + p.Rf / p.R1, im: 0 }, { re: 1, im: w * (1 + p.Rf / p.R1) / GBW }),
+};
+const BARRIDO = [
+  ['rc-lowpass', { R: 1000, C: 1e-7 }, 1], ['rc-lowpass', { R: 100, C: 1e-9 }, 1], ['rc-lowpass', { R: 1e5, C: 1e-5 }, 1],
+  ['rc-highpass', { R: 1000, C: 1e-7 }, 1], ['rc-highpass', { R: 100, C: 1e-9 }, 1], ['rc-highpass', { R: 1e5, C: 1e-5 }, 1],
+  ['rl-lowpass', { R: 100, L: 0.01 }, 1], ['rl-lowpass', { R: 10000, L: 1e-4 }, 1],
+  ['rl-highpass', { R: 100, L: 0.01 }, 1], ['rl-highpass', { R: 10000, L: 1e-4 }, 1],
+  ['opamp-integrator', { R: 10000, C: 1e-7, Rf: 1e6 }, 0.1],
+  ['opamp-differentiator', { R: 10000, C: 1e-7, Rs: 100 }, 0.1],
+  ['opamp-inverting', { Rin: 10000, Rf: 100000 }, 0.05],
+  ['opamp-noninverting', { R1: 10000, Rf: 90000 }, 0.05],
+];
+const ajustar = d => ((d + 540) % 360) - 180;
+
+for (const [id, params, amp] of BARRIDO) {
+  test(`barrido: ${id} ${JSON.stringify(params)} de 50 Hz a 100 kHz`, () => {
+    for (const f of [50, 100, 249, 500, 1000, 1590, 5000, 16000, 100000]) {
+      const r = circuito(id, params, f, amp);
+      const H = RESPUESTA[id](2 * Math.PI * f, params);
+      const vpp = 2 * amp * Math.hypot(H.re, H.im);
+      cerca(r.vpp, vpp, vpp * 0.01, `Vpp a ${f} Hz`);
+      cerca(ajustar(r.fase - Math.atan2(H.im, H.re) * 180 / Math.PI), 0, 1.5, `fase a ${f} Hz`);
+    }
+  });
+}

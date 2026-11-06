@@ -171,7 +171,7 @@
           "measurements": [
             "Con entrada triangular: verificar que la salida es cuadrada",
             "Con entrada senoidal: medir amplitud de CH2 y verificar |H| = 2πf·RC",
-            "Verificar adelanto de 90° (CH2 adelanta a CH1)",
+            "Verificar retraso de 90° (CH2 retrasa a CH1)",
             "Medir Vout para f=100 Hz: |H| = 2π·100·0,001 = 0,63"
           ],
           "steps": [
@@ -309,7 +309,7 @@
           "key_formulas": [
             "Vout = max(Vin − 0,7 V, 0)",
             "Vout_pico = Vin_pico − 0,7 V",
-            "Vout_media = Vout_pico / π ≈ 0,318 · Vout_pico"
+            "Vout_media ≈ Vout_pico / π ≈ 0,318 · Vout_pico (si Vpico ≫ 0,7 V)"
           ],
           "measurements": [
             "Medir Vpico CH1 (Vin) y CH2 (Vout)",
@@ -338,7 +338,7 @@
           "key_formulas": [
             "Vout = max(|Vin| − 1,4 V, 0)",
             "Vout_pico = Vin_pico − 1,4 V",
-            "Vout_media = 2 · Vout_pico / π ≈ 0,637 · Vout_pico",
+            "Vout_media ≈ 2 · Vout_pico / π ≈ 0,637 · Vout_pico (si Vpico ≫ 1,4 V)",
             "Frecuencia_out = 2 · Frecuencia_in"
           ],
           "measurements": [

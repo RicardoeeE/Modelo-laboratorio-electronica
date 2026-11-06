@@ -1,6 +1,7 @@
-// Contrasta las medidas del osciloscopio con el calculo. Ejecutar: node --test tests/
+// Contrasta las medidas del osciloscopio con el calculo. Ejecutar: node --test
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import {
   measureFrequency, measurePhase, measureVpp, measureVmax, measureVmin, visibleWindow, chooseVdiv,
 } from '../js/engine/measurements.js';
@@ -294,4 +295,39 @@ test('V/div automatico: la senal cabe y aprovecha la pantalla', () => {
   assert.equal(chooseVdiv(0.02), 0.01);
   assert.equal(chooseVdiv(1), 0.5);
   assert.equal(chooseVdiv(1000), 20);
+});
+
+// ── La guia dice lo mismo que el calculo ──
+const EXPERIMENTOS = JSON.parse(readFileSync(new URL('../data/experiments.json', import.meta.url))).experiments;
+const textoDe = id => {
+  const e = EXPERIMENTOS.find(x => x.id === id);
+  return [e.description, e.formula, ...e.steps.map(s => s.text)].join(' ');
+};
+
+test('guia: transistor con las cifras calculadas, sin ganancia −gm·Rc ni clipping a 200 mV', () => {
+  const t = textoDe('bjt-common-emitter');
+  const op = operatingPoint(BJT, 12);
+  assert.match(t, /VB ≈ 2,04 V/);
+  assert.match(t, /IC ≈ 1,34 mA/);
+  assert.match(t, /VCE ≈ 4,4 V/);
+  assert.match(t, /≈ −4,6/);
+  assert.doesNotMatch(t, /~200 mV/);
+  cerca(op.Av, -4.6, 0.05, 'Av de la guia');
+});
+
+test('guia: integrador adelanta y diferenciador retrasa, en todos sus textos', () => {
+  assert.doesNotMatch(textoDe('opamp-differentiator'), /\+90/);
+  assert.match(textoDe('opamp-differentiator'), /−90/);
+  assert.match(textoDe('opamp-integrator'), /\+90/);
+  const teoria = readFileSync(new URL('../data/theory.json', import.meta.url), 'utf8');
+  assert.doesNotMatch(teoria, /adelanto de 90° \(CH2 adelanta a CH1\)/);
+});
+
+test('guia: cada experimento arranca con parametros dentro de sus limites', () => {
+  for (const e of EXPERIMENTOS) {
+    for (const c of e.paramControls) {
+      const v = e.defaultParams[c.key] / (c.scale ?? 1);
+      assert.ok(v >= c.min && v <= c.max, `${e.id}.${c.key}=${v}`);
+    }
+  }
 });

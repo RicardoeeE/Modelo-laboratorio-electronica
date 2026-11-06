@@ -29,8 +29,14 @@ Simulador web interactivo de laboratorio de electrónica analógica.
 10. Rectificador de Media Onda
 11. Rectificador de Onda Completa (Puente)
 
-Cada experimento incluye guía paso a paso, parámetros ajustables en tiempo real,
-y medidas automáticas en el osciloscopio (frecuencia, Vpp CH1/CH2, desfase de fase).
+Cada experimento incluye guía paso a paso, parámetros ajustables en tiempo real, su montaje de referencia en la protoboard
+y medidas automáticas en el osciloscopio (frecuencia de CH1 y CH2, Vpp y desfase).
+
+## Protoboard libre
+
+Montas el circuito agujero a agujero: generador (**Gen**), componentes, cables y sonda (**CH2**). El carril de abajo es GND y el de arriba, V+. El detector mira la conexión real (nodos, cables, polaridad y pines del op-amp y del transistor), te dice qué falta y, si el montaje coincide con uno de los 11 experimentos, calcula CH2 con los valores que hayas puesto.
+
+**No es un resolvedor general de circuitos:** cualquier otro montaje no da señal en CH2. No modela la alimentación del op-amp, que se toma de la fuente, ni la masa flotante del puente: CH2 mide entre + y −.
 
 ## Cómo usar
 
@@ -45,14 +51,16 @@ python3 -m http.server 8080
 ## Pruebas
 
 ```bash
-node --test tests/medidas.test.mjs
+node --test
 ```
 
-Contrastan las medidas del osciloscopio con el cálculo: frecuencia, Vpp y fase de los filtros en su frecuencia de corte, del integrador, del diferenciador y de los amplificadores con op-amp.
+Hace falta Node 20 o superior. Contrastan con el cálculo las medidas del osciloscopio (frecuencia, Vpp y fase de filtros, op-amp, transistor y rectificadores), lo que se ve en pantalla y las cifras de la guía. También pasan el montaje de cada experimento por el detector de la protoboard.
 
 ## Cómo está hecho
 
-Hecho con ayuda de IA. Las medidas de filtros, integrador, diferenciador y amplificadores con op-amp se comprueban con pruebas contra la teoría; las de transistor y rectificadores, todavía no.
+Hecho con ayuda de IA. Las medidas de los 11 experimentos se comprueban con pruebas contra la teoría.
+
+El transistor es un modelo lineal por tramos con RE sin desacoplar: punto de trabajo, ganancia y recorte salen del cálculo, no de un modelo de Ebers-Moll. El rectificador usa un diodo ideal con caída fija. Lo que se toca con el ratón se ha probado a mano en el navegador; no hay pruebas automáticas de la interfaz.
 
 ## Tecnología
 

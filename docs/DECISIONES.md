@@ -16,3 +16,12 @@ Repo público a propósito (simulador web); excepción apuntada en `dev-meta/NOR
 ## 2026-11-06 — La ayuda de IA se declara
 - El README dice que el proyecto se ha hecho con ayuda de IA y qué medidas están contrastadas con la teoría.
 - `CLAUDE.md` se reduce a lo que sirve en este repo.
+
+## 2026-11-06 — Protoboard por conexión real y transistor contrastado
+- **Protoboard:** el detector compara con los 11 experimentos mirando nodos, cables, carriles, Gen, CH2, polaridad y pines. No se hace un resolvedor MNA general: costaría mucho más y los modelos del motor ya están contrastados. Otro montaje no da señal en CH2 y lo dice.
+- **Carriles:** arriba V+ y abajo GND, cada uno un solo nodo. El de la KBH GL-23 real tiene dos líneas por carril; aquí se simplifica a una.
+- **Montajes de referencia:** cada experimento enseña el suyo, y las pruebas los pasan por el detector. Así guía, placa y motor no pueden divergir sin que falle una prueba.
+- **Emisor común con RE sin desacoplar:** Av = −Rc/(re+RE) ≈ −4,6. El motor daba −gm·Rc ≈ −256 mientras la guía decía −4,7. Se sigue a la guía porque es el circuito que describe; RE desacoplada queda fuera.
+- **Disparo:** lo manda CH1 para los dos canales. Con un disparo por canal las trazas salían alineadas y el desfase medido no se veía.
+- **Señales exactas:** cuadrada y triangular dejan de ser series de Fourier truncadas, que daban +18 % de Vpp por Gibbs.
+- **Sin licencia todavía:** pendiente de confirmar de quién es `data/theory.json`.

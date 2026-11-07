@@ -67,3 +67,7 @@ El transistor es un modelo lineal por tramos con RE sin desacoplar: punto de tra
 - HTML5 + CSS3 + JavaScript ES Modules puro — sin frameworks ni build tools
 - Canvas API para el osciloscopio (persistencia de fósforo, grid CRT)
 - Motor analítico de circuitos (filtros IIR digitales equivalentes a H(jω))
+
+## Licencia
+
+MIT. Ver [LICENSE](LICENSE).

@@ -7,7 +7,7 @@
         {
           "id": "opamp-inverting-theory",
           "name": "Amplificador Inversor",
-          "practica": "P3 · Montaje 1",
+          "practica": "Circuito con op-amp",
           "type": "Amplificador operacional inversor (UA741)",
           "components": "UA741/LM741, Ri = 1 kΩ (entrada a pin–), Rf = 2 kΩ (realimentación), ±15 V",
           "signal": "Senoidal 1 Vp, 1 kHz",
@@ -42,7 +42,7 @@
         {
           "id": "opamp-noninv-theory",
           "name": "Amplificador No-Inversor",
-          "practica": "P3 · Montaje 2",
+          "practica": "Circuito con op-amp",
           "type": "Amplificador operacional no-inversor (UA741)",
           "components": "UA741/LM741, Ri = 1 kΩ (pin– a GND), Rf = 1 kΩ (realimentación), ±15 V",
           "signal": "Senoidal 1 Vp, 1 kHz",
@@ -77,7 +77,7 @@
         {
           "id": "opamp-summer-theory",
           "name": "Sumador Inversor",
-          "practica": "P3 · Montaje 3",
+          "practica": "Circuito con op-amp",
           "type": "Sumador inversor (amplificador sumador con OpAmp)",
           "components": "UA741/LM741, R1 = R2 = R3 = 1 kΩ, Rf = 2 kΩ, V1=V2=0,5 Vp 1 kHz (AC), V3=5 V DC, ±15 V",
           "signal": "V1=V2: senoidal 0,5 Vp 1 kHz; V3: continua 5 V",
@@ -118,7 +118,7 @@
         {
           "id": "opamp-integrator-theory",
           "name": "Integrador OpAmp",
-          "practica": "P3 M4 / P4 M2",
+          "practica": "Circuito con op-amp",
           "type": "Integrador de OpAmp (circuito Miller)",
           "components": "LM324/UA741, R = 10 kΩ (entrada a pin–), C = 1 µF (realimentación), ±15 V",
           "signal": "Cuadrada 100 Hz, 300 mVp",
@@ -192,7 +192,7 @@
         {
           "id": "active-hp-filter-theory",
           "name": "Filtro Activo Paso Alto Inv.",
-          "practica": "P4 · Montaje 1",
+          "practica": "Filtro activo",
           "type": "Filtro paso alto activo inversor de 1er orden (LM741)",
           "components": "LM741, R1 = 1 kΩ, R2 = 10 kΩ (Rf), R_cinta = 10 kΩ, C_cinta = 100 nF, ±15 V",
           "signal": "Senoidal, amplitud libre, frecuencia variable 100 Hz–100 kHz",

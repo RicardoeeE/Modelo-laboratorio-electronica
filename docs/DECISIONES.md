@@ -29,3 +29,7 @@ Repo público a propósito (simulador web); excepción apuntada en `dev-meta/NOR
 ## 2026-11-06 — Paso alto exacto y barrido de frecuencias
 - **Paso alto:** la fórmula `α(y + Δx)` solo vale si dt ≪ τ: daba −50 % de Vpp a 50 Hz y CH2 plano con τ muy pequeña. Se usa la solución exacta para entrada lineal en cada paso. No se usa la bilineal porque, con τ ≪ dt, su polo cerca de −1 deja una oscilación que tarda en apagarse.
 - **Pruebas:** cada circuito lineal se compara con H(jω) de 50 Hz a 100 kHz, no solo en el corte, que era donde el fallo quedaba dentro de la tolerancia.
+
+## 2026-11-07 — Licencia MIT y sin numeración de la asignatura
+- **Licencia MIT**, con el OK de Ricardo: el texto de la guía y la teoría es suyo.
+- **Etiquetas de la teoría:** «P3 · Montaje 1» y similares pasan a «Circuito con op-amp» y «Filtro activo». La numeración de las prácticas no aporta a quien no cursa la asignatura y lo ataba a ella.
